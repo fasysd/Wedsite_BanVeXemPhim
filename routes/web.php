@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+
 Route::get('/login', function () {
     return view('user.login');
 })->name('login');
@@ -23,6 +24,7 @@ Route::get('/account/tickets', function () {
 Route::get('/account/detail', function () {
     return view('user.account.detail');
 })->name('user.account.detail');
+Route::get('/welcome', function () {
     return view('welcome');
 });
 
