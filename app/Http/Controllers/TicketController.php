@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class MovieController extends Controller
+class TicketController extends Controller
 {
         /*
         Thực hiện:
-            Xem danh sách phim
-            Xem chi tiết phim
+            Danh sách vé của tôi
+            Chi tiết vé
     */
 }
