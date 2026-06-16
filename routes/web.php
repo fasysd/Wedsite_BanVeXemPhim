@@ -2,6 +2,24 @@
 
 use Illuminate\Support\Facades\Route;
 
+//Testing ----------------------------------
+use App\Http\Controllers\AdminRoomController;
+use App\Http\Controllers\AdminShowtimeController;
+use Illuminate\Http\Request;
+
+/*
+|--------------------------------------------------------------------------
+| TEST ADMIN ROOM CONTROLLER
+|--------------------------------------------------------------------------
+*/
+
+// Danh sách phòng
+Route::get('/test/room/create-success', function (
+    AdminRoomController $controller
+) {
+    return $controller->destroy(1);
+});
+//----------------------------------------------
 
 Route::get('/login', function () {
     return view('user.login');
