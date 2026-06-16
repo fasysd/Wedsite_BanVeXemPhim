@@ -30,8 +30,11 @@ Route::get('/welcome', function () {
 
 Route::view('/admin', 'admin')->name('admin.dashboard');
 Route::view('/admin/movies', 'admin.movies.index')->name('admin.movies.index');
+Route::view('/admin/movies/create', 'admin.movies.create')->name('admin.movies.create');
 Route::view('/admin/showtimes', 'admin.showtimes.index')->name('admin.showtimes.index');
+Route::view('/admin/showtimes/create', 'admin.showtimes.create')->name('admin.showtimes.create');
 Route::view('/admin/rooms', 'admin.rooms.index')->name('admin.rooms.index');
+Route::view('/admin/rooms/create', 'admin.rooms.create')->name('admin.rooms.create');
 
 Route::redirect('/staff', '/staff/bookings');
 Route::view('/staff/bookings', 'staff.bookings')->name('staff.bookings');
