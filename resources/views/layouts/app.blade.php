@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -16,12 +16,12 @@
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
 
-            <a class="logo" href="{{ route('user.index') }}">
+            <a class="logo" href="{{ route('movies') }}">
                 CineGo
             </a>
 
             <div class="d-flex align-items-center ms-4">
-                <a href="{{ route('user.index') }}" class="nav-link-custom">Phim</a>
+                <a href="{{ route('movies') }}" class="nav-link-custom">Phim</a>
                 <a href="{{ route('user.help.about') }}" class="nav-link-custom">Rạp</a>
                 <a href="{{route('user.account.tickets')}}" class="nav-link-custom">Vé của tôi</a>
             </div>

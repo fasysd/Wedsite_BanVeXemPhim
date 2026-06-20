@@ -8,38 +8,10 @@
         'https://picsum.photos/1200/400?random=13',
     ];
 
-    $movies = [
-        (object)[
-            'poster' => 'https://picsum.photos/300/450?random=1',
-            'title' => 'Avengers: Endgame',
-            'release_date' => '26/04/2019',
-            'genres' => ['Action', 'Adventure', 'Sci-Fi']
-        ],
-        (object)[
-            'poster' => 'https://picsum.photos/300/450?random=2',
-            'title' => 'Spider-Man: No Way Home',
-            'release_date' => '17/12/2021',
-            'genres' => ['Action', 'Fantasy']
-        ],
-        (object)[
-            'poster' => 'https://picsum.photos/300/450?random=3',
-            'title' => 'The Batman',
-            'release_date' => '04/03/2022',
-            'genres' => ['Action', 'Crime']
-        ],
-        (object)[
-            'poster' => 'https://picsum.photos/300/450?random=4',
-            'title' => 'Interstellar',
-            'release_date' => '07/11/2014',
-            'genres' => ['Sci-Fi', 'Drama']
-        ],
-        (object)[
-            'poster' => 'https://picsum.photos/300/450?random=5',
-            'title' => 'Inception',
-            'release_date' => '16/07/2010',
-            'genres' => ['Sci-Fi', 'Thriller']
-        ],
-    ];
+    foreach($movies as $movie) {
+        $movie->genres = explode(',', $movie->genre);
+        $movie->image_path = asset('images/movieavatar.webp');
+    }
 @endphp
 
 <div class="container-fluid movie-index-page text-dark p-0">
@@ -124,11 +96,13 @@
             <div class="movie-row">
 
                 @foreach($movies as $movie)
-
+                    @if($loop->index == 5) 
+                        @break
+                    @endif
                     <div class="movie-item">
-
                         <x-movie-card
-                            :image="$movie->poster"
+                            :id="$movie->id"
+                            :image="$movie->image_path"
                             :title="$movie->title"
                             :release-date="$movie->release_date"
                             :genres="$movie->genres"
@@ -149,13 +123,16 @@
             </h2>
 
             <div class="movie-row">
-
+              
                 @foreach($movies as $movie)
-
+                @if($loop->index == 4) 
+                        @break
+                    @endif
                     <div class="movie-item">
 
                         <x-movie-card
-                            :image="$movie->poster"
+                            :id="$movie->id"
+                            :image="$movie->image_path"
                             :title="$movie->title"
                             :release-date="$movie->release_date"
                             :genres="$movie->genres"
@@ -176,13 +153,15 @@
             </h2>
 
             <div class="movie-row">
-
                 @foreach($movies as $movie)
-
+                    @if($loop->index == 4) 
+                            @break
+                        @endif
                     <div class="movie-item">
 
                         <x-movie-card
-                            :image="$movie->poster"
+                            :id="$movie->id"
+                            :image="$movie->image_path"
                             :title="$movie->title"
                             :release-date="$movie->release_date"
                             :genres="$movie->genres"
@@ -199,4 +178,14 @@
     </div>
 
 </div>
+<script>
+    document.querySelectorAll('.movie-card').forEach(row => {
+        row.addEventListener('click', () => {
+            const ticketId = row.getAttribute('data-id');
+            if (ticketId) {
+                window.location.href = `/movies/${ticketId}`;
+            }
+        });
+    });
+</script>
 @endsection

@@ -39,6 +39,33 @@ class MovieSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'title' => 'The Flash',
+                'duration' => 144,
+                'release_date' => '2023-06-16',
+                'genre' => 'Action',
+                'description' => 'DC movie',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'The Little Mermaid',
+                'duration' => 135,
+                'release_date' => '2023-05-26',
+                'genre' => 'Fantasy',
+                'description' => 'Disney movie',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'The Marvels',
+                'duration' => 105,
+                'release_date' => '2023-07-28',
+                'genre' => 'Action',
+                'description' => 'Marvel movie',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

@@ -1,4 +1,4 @@
-<div class="card movie-card h-100 bg-dark shadow-sm">
+<div class="card movie-card h-100 bg-dark shadow-sm" data-id="{{ $id }}">
     <img
         src="{{ $image }}"
         class="card-img-top"

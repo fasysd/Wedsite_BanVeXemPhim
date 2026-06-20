@@ -12,6 +12,7 @@ class MovieCard extends Component
      * Create a new component instance.
      */
     public function __construct(
+        public int $id,
         public string $image,
         public string $title,
         public string $releaseDate,
