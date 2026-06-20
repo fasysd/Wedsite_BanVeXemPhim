@@ -22,8 +22,22 @@ Route::get('/account/tickets/{id}', [TicketController::class, 'show'])->name('us
 Route::get('/account/detail', function () {
     return view('user.account.detail');
 })->name('user.account.detail');
+<<<<<<< HEAD
 Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movie.show');
 // ---Post routes---
 Route::post('/login', [UserController::class, 'login'])->name('login.post');
 Route::post('/register', [UserController::class, 'register'])->name('register.post  ');
 Route::post('/movies/{id}/purchase', [TicketController::class, 'purchase'])->name('ticket.purchase');
+=======
+    return view('welcome');
+});
+
+Route::view('/admin', 'admin')->name('admin.dashboard');
+Route::view('/admin/movies', 'admin.movies.index')->name('admin.movies.index');
+Route::view('/admin/showtimes', 'admin.showtimes.index')->name('admin.showtimes.index');
+Route::view('/admin/rooms', 'admin.rooms.index')->name('admin.rooms.index');
+
+Route::redirect('/staff', '/staff/bookings');
+Route::view('/staff/bookings', 'staff.bookings')->name('staff.bookings');
+Route::view('/staff/tickets', 'staff.tickets')->name('staff.tickets');
+>>>>>>> 88d971248a68e63241063d0580672aebbd6d6d6c

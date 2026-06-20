@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+<<<<<<< HEAD
 use App\Models\Movie;
 class MovieController extends Controller
 {
@@ -63,4 +64,14 @@ class MovieController extends Controller
     {
         //
     }
+=======
+
+class MovieController extends Controller
+{
+        /*
+        Thực hiện:
+            Xem danh sách phim
+            Xem chi tiết phim
+    */
+>>>>>>> 88d971248a68e63241063d0580672aebbd6d6d6c
 }

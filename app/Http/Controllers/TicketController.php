@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+<<<<<<< HEAD
 use App\Models\TicketDetail;
 use Illuminate\Http\Request;
 class TicketController extends Controller
@@ -67,4 +68,15 @@ class TicketController extends Controller
     {
         //
     }
+=======
+use Illuminate\Http\Request;
+
+class TicketController extends Controller
+{
+        /*
+        Thực hiện:
+            Danh sách vé của tôi
+            Chi tiết vé
+    */
+>>>>>>> 88d971248a68e63241063d0580672aebbd6d6d6c
 }

@@ -9,6 +9,10 @@ class Movie extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'release_date' => 'date',
+    ];
+
     protected $fillable = [
         'title',
         'duration',
