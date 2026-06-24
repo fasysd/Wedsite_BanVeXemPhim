@@ -44,42 +44,45 @@
                 <div class="card p-4">
                     <form onsubmit="event.preventDefault()">
                         <div class="row g-3">
-                            <div class="col-md-2">
-                                <label class="form-label">ID</label>
-                                <input type="text" class="form-control" placeholder="Nhập ID">
-                            </div>
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 <label class="form-label">Tên phòng</label>
-                                <input type="text" class="form-control" placeholder="Nhập tên phòng">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Ví dụ: Phòng 1"
+                                >
                             </div>
-                            <div class="col-md-5">
-                                <label class="form-label">Tổng số ghế</label>
-                                <input type="number" class="form-control" min="1" placeholder="120">
-                            </div>
+
                             <div class="col-md-4">
-                                <label class="form-label">Số ghế mỗi hàng</label>
-                                <input type="number" class="form-control" min="1" placeholder="10">
+                                <label class="form-label">Số dãy ghế</label>
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    min="1"
+                                    placeholder="Ví dụ: 12"
+                                >
                             </div>
+
                             <div class="col-md-4">
-                                <label class="form-label">Loại phòng</label>
-                                <select class="form-control">
-                                    <option>Tiêu chuẩn</option>
-                                    <option>VIP</option>
-                                    <option>IMAX</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Số ghế VIP</label>
-                                <input type="number" class="form-control" min="0" placeholder="12">
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Danh sách ghế VIP</label>
-                                <input type="text" class="form-control" placeholder="A1,A2,B3...">
+                                <label class="form-label">Số ghế mỗi dãy</label>
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    min="1"
+                                    placeholder="Ví dụ: 10"
+                                >
                             </div>
                         </div>
+
                         <div class="mt-4 d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">Lưu</button>
-                            <a href="{{ route('admin.rooms.index') }}" class="btn btn-outline-light">Hủy</a>
+                            <button type="submit" class="btn btn-primary">
+                                Lưu
+                            </button>
+
+                            <a href="{{ route('admin.rooms.index') }}"
+                            class="btn btn-outline-light">
+                                Hủy
+                            </a>
                         </div>
                     </form>
                 </div>

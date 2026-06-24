@@ -44,11 +44,7 @@
                 <div class="card p-4">
                     <form onsubmit="event.preventDefault()">
                         <div class="row g-3">
-                            <div class="col-md-2">
-                                <label class="form-label">ID</label>
-                                <input type="text" class="form-control" placeholder="Nhập ID">
-                            </div>
-                            <div class="col-md-5">
+                            <div class="col-md-6">
                                 <label class="form-label">Phim</label>
                                 <select class="form-control">
                                     <option>Chọn phim</option>
@@ -57,7 +53,8 @@
                                     <option>Hành trình mãnh liệt</option>
                                 </select>
                             </div>
-                            <div class="col-md-5">
+
+                            <div class="col-md-6">
                                 <label class="form-label">Phòng chiếu</label>
                                 <select class="form-control">
                                     <option>Chọn phòng</option>
@@ -74,13 +71,9 @@
                                 <label class="form-label">Kết thúc</label>
                                 <input type="datetime-local" class="form-control">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-12">
                                 <label class="form-label">Giá vé chuẩn</label>
                                 <input type="number" class="form-control" min="0" placeholder="120000">
-                            </div>
-                            <div class="col-md-8">
-                                <label class="form-label">Ghi chú</label>
-                                <input type="text" class="form-control" placeholder="Ví dụ: khuyến mãi 20% buổi chiều">
                             </div>
                         </div>
                         <div class="mt-4 d-flex gap-2">
