@@ -27,3 +27,15 @@ Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movie.show')
 Route::post('/login', [UserController::class, 'login'])->name('login.post');
 Route::post('/register', [UserController::class, 'register'])->name('register.post  ');
 Route::get('/movies/{movie}/booking', [TicketController::class, 'booking'])->name('ticket.booking')->middleware('auth');
+Route::get('/welcome', function () {
+    return view('welcome');
+});
+
+Route::view('/admin', 'admin')->name('admin.dashboard');
+Route::view('/admin/movies', 'admin.movies.index')->name('admin.movies.index');
+Route::view('/admin/showtimes', 'admin.showtimes.index')->name('admin.showtimes.index');
+Route::view('/admin/rooms', 'admin.rooms.index')->name('admin.rooms.index');
+
+Route::redirect('/staff', '/staff/bookings');
+Route::view('/staff/bookings', 'staff.bookings')->name('staff.bookings');
+Route::view('/staff/tickets', 'staff.tickets')->name('staff.tickets');
