@@ -1,0 +1,35 @@
+
+.movie-index-page{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.seat-layout{
+    padding:20px;
+}
+
+.seat-box{
+    width:60px;
+    height:60px;
+    border:1px solid #333;
+    border-radius:8px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    margin-right:8px;
+
+    background:#f5f5f5;
+    font-weight:bold;
+
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.seat-box:hover{
+    background:#00c16a;
+    color:white;
+}
