@@ -55,9 +55,11 @@
                             <p class="text-muted mb-0">Xem, tìm kiếm và quản lý phim nhanh chóng.</p>
                         </div>
                         <div class="d-flex gap-2">
-                            <input id="movieSearch" type="search" class="form-control form-control-sm" placeholder="Tìm theo tên phim..." style="min-width:320px;" disabled>
-                            <button type="button" class="btn btn-outline-light btn-sm" disabled>Tìm</button>
-                            <button type="button" class="btn btn-success btn-sm" disabled>Thêm phim mới</button>
+                            <form method="GET" action="{{ route('admin.movies.index') }}" class="d-flex">
+                                <input id="movieSearch" name="q" value="{{ $q ?? '' }}" type="search" class="form-control form-control-sm" placeholder="Tìm theo tên phim..." style="min-width:320px;">
+                                <button type="submit" class="btn btn-outline-light btn-sm ms-2">Tìm</button>
+                            </form>
+                            <a href="{{ route('admin.movies.create') }}" class="btn btn-success btn-sm">Thêm phim mới</a>
                         </div>
                     </div>
                     <div class="row g-3 mb-4">
@@ -81,6 +83,7 @@
                         </div>
                     </div>
                     <div class="table-responsive rounded-4 shadow-sm">
+                        @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
@@ -95,46 +98,36 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach($movies as $m)
                                 <tr>
-                                    <td class="small text-muted">1</td>
+                                    <td class="small text-muted">{{ $m->id }}</td>
                                     <td>
-                                        <img src="https://via.placeholder.com/72x100.png?text=Phim" alt="Phim mẫu" class="movie-poster shadow-sm">
+                                        @if($m->image_path)
+                                            <img src="{{ asset('storage/' . $m->image_path) }}" alt="{{ $m->title }}" class="movie-poster shadow-sm">
+                                        @else
+                                            <img src="https://via.placeholder.com/72x100.png?text=Phim" alt="Phim" class="movie-poster shadow-sm">
+                                        @endif
                                     </td>
                                     <td style="min-width:220px">
                                         <div>
-                                            <strong>Cuộc chiến rạp chiếu</strong>
-                                            <div class="small text-muted">Hành động, giả tưởng</div>
+                                            <strong>{{ $m->title }}</strong>
+                                            <div class="small text-muted">{{ $m->duration ? $m->duration . ' phút' : '' }}</div>
                                         </div>
                                     </td>
-                                    <td class="text-muted small">Phim bom tấn mùa hè, chiến binh rạp chiếu.</td>
-                                    <td>Hành động</td>
-                                    <td>15/06/2026</td>
-                                    <td>120 phút</td>
+                                    <td class="text-muted small">{{ \Illuminate\Support\Str::limit($m->description, 120) }}</td>
+                                    <td>{{ $m->genre }}</td>
+                                    <td>{{ $m->release_date?->format('d/m/Y') }}</td>
+                                    <td>{{ $m->duration ? $m->duration . ' phút' : '' }}</td>
                                     <td class="text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-primary me-1" disabled>Sửa</button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" disabled>Xóa</button>
+                                        <a class="btn btn-sm btn-outline-primary me-1" href="{{ route('admin.movies.edit', $m) }}">Sửa</a>
+                                        <a class="btn btn-sm btn-outline-secondary me-1" href="{{ route('admin.movies.show', $m) }}">Xem</a>
+                                        <form action="{{ route('admin.movies.destroy', $m) }}" method="POST" style="display:inline">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa phim này?')">Xóa</button>
+                                        </form>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="small text-muted">2</td>
-                                    <td>
-                                        <img src="https://via.placeholder.com/72x100.png?text=Phim" alt="Phim mẫu" class="movie-poster shadow-sm">
-                                    </td>
-                                    <td style="min-width:220px">
-                                        <div>
-                                            <strong>Thiên nhiên đen tối</strong>
-                                            <div class="small text-muted">Kinh dị, tâm lý</div>
-                                        </div>
-                                    </td>
-                                    <td class="text-muted small">Chuyến phiêu lưu rùng rợn trong một rạp tối.</td>
-                                    <td>Kinh dị</td>
-                                    <td>22/06/2026</td>
-                                    <td>98 phút</td>
-                                    <td class="text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-primary me-1" disabled>Sửa</button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" disabled>Xóa</button>
-                                    </td>
-                                </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
