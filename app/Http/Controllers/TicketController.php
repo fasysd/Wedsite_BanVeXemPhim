@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-<<<<<<< HEAD
 use App\Models\TicketDetail;
 use Illuminate\Http\Request;
+use App\Models\Movie;
+use App\Models\Seat;
+use App\Models\Showtime;
 class TicketController extends Controller
+
 {
     /**
      * Display a listing of the resource.
@@ -23,17 +26,19 @@ class TicketController extends Controller
     {
         //
     }
-    public function purchase(Request $request, $id)
+    public function booking(Movie $movie)
     {
-        $seats = $request->seat_id; 
-        dd($seats);
+        $seats = Seat::all();
+        $showtime = Showtime::where('movie_id', $movie->id)->first();
+        return view('movie.booking', ['movie' => $movie, 'seats' => $seats, 'showtime' => $showtime] );
     }
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(TicketDetail $ticketDetail)
     {
-        //
+        $ticketDetail->save();
+        return redirect()->route('user.account.tickets')->with('success', 'Ticket purchased successfully.');
     }
 
     /**
@@ -68,15 +73,4 @@ class TicketController extends Controller
     {
         //
     }
-=======
-use Illuminate\Http\Request;
-
-class TicketController extends Controller
-{
-        /*
-        Thực hiện:
-            Danh sách vé của tôi
-            Chi tiết vé
-    */
->>>>>>> 88d971248a68e63241063d0580672aebbd6d6d6c
 }

@@ -170,7 +170,7 @@
             </p>
 
             <a
-                href="{{ route('user.index') }}"
+                href="{{ route('movies') }}"
                 class="btn btn-success btn-lg">
                 Khám phá phim
             </a>

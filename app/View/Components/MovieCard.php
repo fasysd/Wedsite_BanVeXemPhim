@@ -13,7 +13,7 @@ class MovieCard extends Component
      */
     public function __construct(
         public int $id,
-        public string $image,
+        public ?string $image,
         public string $title,
         public string $releaseDate,
         public array $genres = []

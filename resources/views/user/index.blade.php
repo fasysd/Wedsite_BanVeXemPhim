@@ -81,111 +81,11 @@
         </div>
 
     </section>
-
-    {{-- =======================
-         MOVIE CONTENT
-    ======================== --}}
     <div class="container py-5">
-
-        <section class="movie-section">
-
-            <h2 class="movie-section-title">
-                Phim đang chiếu tại CineGo
-            </h2>
-
-            <div class="movie-row">
-
-                @foreach($movies as $movie)
-                    @if($loop->index == 5) 
-                        @break
-                    @endif
-                    <div class="movie-item">
-                        <x-movie-card
-                            :id="$movie->id"
-                            :image="$movie->image_path"
-                            :title="$movie->title"
-                            :release-date="$movie->release_date"
-                            :genres="$movie->genres"
-                        />
-
-                    </div>
-
-                @endforeach
-
-            </div>
-
-        </section>
-
-        <section class="movie-section">
-
-            <h2 class="movie-section-title">
-                Gợi ý cho bạn
-            </h2>
-
-            <div class="movie-row">
-              
-                @foreach($movies as $movie)
-                @if($loop->index == 4) 
-                        @break
-                    @endif
-                    <div class="movie-item">
-
-                        <x-movie-card
-                            :id="$movie->id"
-                            :image="$movie->image_path"
-                            :title="$movie->title"
-                            :release-date="$movie->release_date"
-                            :genres="$movie->genres"
-                        />
-
-                    </div>
-
-                @endforeach
-
-            </div>
-
-        </section>
-
-        <section class="movie-section">
-
-            <h2 class="movie-section-title">
-                Phim sắp khởi chiếu
-            </h2>
-
-            <div class="movie-row">
-                @foreach($movies as $movie)
-                    @if($loop->index == 4) 
-                            @break
-                        @endif
-                    <div class="movie-item">
-
-                        <x-movie-card
-                            :id="$movie->id"
-                            :image="$movie->image_path"
-                            :title="$movie->title"
-                            :release-date="$movie->release_date"
-                            :genres="$movie->genres"
-                        />
-
-                    </div>
-
-                @endforeach
-
-            </div>
-
-        </section>
-
+        <x-movie-suggestion-layout :movies="$movies" title="Phim đang chiếu tại CineGo" />
+        <x-movie-suggestion-layout :movies="$movies" title="Gợi ý cho bạn" />
+        <x-movie-suggestion-layout :movies="$movies" title="Phim sắp chiếu" />
     </div>
 
 </div>
-<script>
-    document.querySelectorAll('.movie-card').forEach(row => {
-        row.addEventListener('click', () => {
-            const ticketId = row.getAttribute('data-id');
-            if (ticketId) {
-                window.location.href = `/movies/${ticketId}`;
-            }
-        });
-    });
-</script>
 @endsection
