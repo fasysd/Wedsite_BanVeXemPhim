@@ -46,7 +46,7 @@
                         <h4 class="mb-1">Quản lý phòng chiếu</h4>
                         <p class="text-muted mb-0">Tạo phòng, thiết lập tổng số ghế và đánh dấu ghế VIP.</p>
                     </div>
-                    <button type="button" class="btn btn-success" disabled>Thêm phòng mới</button>
+                    <a href="{{ route('admin.rooms.create') }}" class="btn btn-success">Thêm phòng mới</a>
                 </div>
                 <div class="table-responsive rounded-4">
                     <table class="table table-borderless align-middle mb-0">

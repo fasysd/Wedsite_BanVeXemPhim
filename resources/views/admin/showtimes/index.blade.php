@@ -46,7 +46,7 @@
                         <h4 class="mb-1">Quản lý lịch chiếu</h4>
                         <p class="text-muted mb-0">Giao diện demo chỉ hiển thị bảng lịch chiếu. Mọi thao tác hiện tại không hoạt động.</p>
                     </div>
-                    <button type="button" class="btn btn-success">Thêm lịch chiếu mới</button>
+                    <a href="{{ route('admin.showtimes.create') }}" class="btn btn-success">Thêm lịch chiếu mới</a>
                 </div>
                 <div class="table-responsive rounded-4">
                     <table class="table table-borderless align-middle mb-0">
