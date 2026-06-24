@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Movie;
 class MovieController extends Controller
@@ -11,6 +12,10 @@ class MovieController extends Controller
      */
     public function index()
     {
+        if (Auth::check() && Auth::user()->role === 'ADMIN') {
+            return redirect()->route('admin.dashboard');
+        }
+
         $movies = Movie::all();
         return view('user.index', compact('movies'));
     }
