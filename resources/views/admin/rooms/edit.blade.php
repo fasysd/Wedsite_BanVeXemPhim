@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm phòng chiếu mới</title>
+    <title>Chỉnh sửa phòng chiếu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background: #0b1220; color: #f8fafc; }
@@ -25,7 +25,7 @@
             <aside class="col-lg-2 sidebar p-3">
                 <div class="mb-4 text-white">
                     <h5 class="mb-1">CineGo Admin</h5>
-                    <small class="text-muted">Thêm phòng chiếu mới</small>
+                    <small class="text-muted">Chỉnh sửa phòng chiếu mới</small>
                 </div>
                 <nav class="nav flex-column">
                     <a class="nav-link" href="{{ route('admin.movies.index') }}">Quản lý phim</a>
@@ -36,13 +36,13 @@
             <main class="col-lg-10 p-4">
                 <div class="d-flex justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                     <div>
-                        <h4 class="mb-1">Thêm phòng chiếu mới</h4>
+                        <h4 class="mb-1">Chỉnh sửa phòng chiếu</h4>
                     </div>
                 </div>
                 <div class="card p-4">
-                    <form action="{{ route('admin.rooms.store') }}" method="POST">
+                    <form action="{{ route('admin.rooms.update', $room->id) }}" method="POST">
                         @csrf
-
+                        @method('PUT')
                         <div class="row g-3">
 
                             <div class="col-md-4">
@@ -51,7 +51,7 @@
                                     type="text"
                                     name="name"
                                     class="form-control @error('name') is-invalid @enderror"
-                                    value="Phòng mới"
+                                    value="{{ old('name', $room->name) }}"
                                     placeholder="Ví dụ: Phòng 1"
                                     required
                                 >
@@ -71,7 +71,7 @@
                                     name="row_count"
                                     type="number"
                                     class="form-control @error('row_count') is-invalid @enderror"
-                                    value="5"
+                                    value="{{ old('row_count', $rowCount) }}"
                                     min="1"
                                     max="26"
                                     placeholder="Ví dụ: 12"
@@ -92,7 +92,7 @@
                                     id="seat_per_row"
                                     name="seat_per_row"
                                     class="form-control @error('seat_per_row') is-invalid @enderror"
-                                    value="10"
+                                    value="{{ old('seat_per_row', $seatPerRow) }}"
                                     min="1"
                                     max="26"
                                     placeholder="Ví dụ: 10"
@@ -117,11 +117,17 @@
                                 </p>
                             </div>
                         </div>
-
+                        
+                        @if ($errors->has('general'))
+                            <div class="alert alert-danger">
+                                {{ $errors->first('general') }}
+                            </div>
+                        @endif
+                        
                         <input type="hidden" name="vip_seats" id="vip_seats">
                         <div class="mt-4 d-flex gap-2">
                             <button type="submit" class="btn btn-primary">
-                                Lưu
+                                Cập nhật
                             </button>
 
                             <a href="{{ route('admin.rooms.index') }}"
@@ -129,6 +135,7 @@
                                 Hủy
                             </a>
                         </div>
+
                     </form>
                 </div>
             </main>
@@ -136,24 +143,45 @@
     </div>
 
 <script>
+    console.log("script loaded");
+    const initialVipSeats =
+        @json(old('vip_seats')
+            ? json_decode(old('vip_seats'), true)
+            : $vipSeats);
+
     const rowInput = document.getElementById('row_count');
     const seatInput = document.getElementById('seat_per_row');
     const preview = document.getElementById('room-preview');
     const vipInput = document.getElementById('vip_seats');
 
-    const vipSeats = new Set();
+    const vipSeats = new Set(initialVipSeats);
 
     function updateVipInput() {
         vipInput.value = JSON.stringify([...vipSeats]);
     }
 
+    let currentRows = null;
+    let currentSeatsPerRow = null;
+
     function renderRoom() {
 
-        vipSeats.clear();
-        updateVipInput();
+        console.log("renderRoom called");
 
         const rows = parseInt(rowInput.value);
         const seatsPerRow = parseInt(seatInput.value);
+
+        const structureChanged =
+            currentRows !== null &&
+            (
+                rows !== currentRows ||
+                seatsPerRow !== currentSeatsPerRow
+            );
+
+        if (structureChanged) {
+            vipSeats.clear();
+        }
+
+        updateVipInput();
 
         if (
             isNaN(rows) ||
@@ -183,9 +211,14 @@
 
                 const seatCode = `${rowLetter}${seat}`;
 
+                const vipClass =
+                    vipSeats.has(seatCode)
+                        ? 'vip'
+                        : '';
+
                 html += `
                     <div
-                        class="seat"
+                        class="seat ${vipClass}"
                         data-seat="${seatCode}">
                         ${seatCode}
                     </div>
@@ -225,6 +258,9 @@
             });
 
         });
+
+        currentRows = rows;
+        currentSeatsPerRow = seatsPerRow;
     }
 
     rowInput.addEventListener('input', renderRoom);

@@ -38,7 +38,8 @@ class RoomService
             $this->generateSeats(
                 $room->id,
                 $data['row_count'],
-                $data['seat_per_row']
+                $data['seat_per_row'],
+                $data['vip_seats'] ?? []
             );
 
             return $room;
@@ -69,7 +70,8 @@ class RoomService
             $this->generateSeats(
                 $room->id,
                 $data['row_count'],
-                $data['seat_per_row']
+                $data['seat_per_row'],
+                $data['vip_seats'] ?? []
             );
 
             return $room->fresh();
@@ -97,10 +99,15 @@ class RoomService
     private function generateSeats(
         int $roomId,
         int $rowCount,
-        int $seatPerRow
+        int $seatPerRow,
+        array $vipSeats = []
     ): void
     {
         $seats = [];
+
+        foreach ($vipSeats as $key => $seatCode) {
+            $vipSeats[$key] = strtoupper($seatCode);
+        }
 
         for ($row = 0; $row < $rowCount; $row++) {
 
@@ -108,11 +115,15 @@ class RoomService
 
             for ($seat = 1; $seat <= $seatPerRow; $seat++) {
 
+                $seatCode = $rowName . $seat;
+
                 $seats[] = [
                     'room_id' => $roomId,
                     'seat_row' => $rowName,
                     'seat_number' => $seat,
-                    'type' => 'STANDARD'
+                    'type' => in_array($seatCode, $vipSeats)
+                        ? 'VIP'
+                        : 'STANDARD'
                 ];
             }
         }

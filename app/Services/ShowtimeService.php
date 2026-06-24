@@ -13,6 +13,7 @@ class ShowtimeService
     public const ERROR_DURATION = 'INVALID_DURATION';
     public const ERROR_CONFLICT = 'ROOM_SCHEDULE_CONFLICT';
     public const ERROR_HAS_TICKETS = 'HAS_TICKETS';
+    public const ERROR_BEFORE_RELEASE = 'BEFORE_MOVIE_RELEASE';
 
     /**
      * Lấy tất cả suất chiếu
@@ -47,6 +48,10 @@ class ShowtimeService
 
         if (!$this->validateStartTime($startTime)) {
             return self::ERROR_START_TIME;
+        }
+
+        if (!$this->validateAfterReleaseDate($startTime, $movie)) {
+            return self::ERROR_BEFORE_RELEASE;
         }
 
         if (
@@ -98,6 +103,10 @@ class ShowtimeService
 
         if (!$this->validateStartTime($startTime)) {
             return self::ERROR_START_TIME;
+        }
+
+        if (!$this->validateAfterReleaseDate($startTime, $movie)) {
+            return self::ERROR_BEFORE_RELEASE;
         }
 
         if (
@@ -184,6 +193,15 @@ class ShowtimeService
         }
 
         return $startTime->diffInMinutes($endTime) >= $movieDuration;
+    }
+
+    private function validateAfterReleaseDate(
+        Carbon $startTime,
+        Movie $movie
+    ): bool {
+        return $startTime->greaterThanOrEqualTo(
+            Carbon::parse($movie->release_date)
+        );
     }
 
     /**

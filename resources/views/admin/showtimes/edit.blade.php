@@ -44,24 +44,30 @@
                     </div>
                 </div>
                 <div class="card p-4">
-                    <form action="{{ route('admin.showtimes.store') }}" method="POST">
+                    <form action="{{ route('admin.showtimes.update', $showtime->id) }}"method="POST">
                         @csrf
+                        @method('PUT')
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Phim</label>
-                                <select class="form-control" id="movieSelect" name="movie_id" required>
-                                    <option value="">Chọn phim</option>
+                                <select
+                                    class="form-control"
+                                    id="movieSelect"
+                                    name="movie_id"
+                                    required>
 
                                     @foreach($movies as $movie)
-                                    <option
-                                        value="{{ $movie->id }}"
-                                        data-duration="{{ $movie->duration }}"
-                                        data-genre="{{ $movie->genre }}"
-                                        data-release="{{ $movie->release_date?->format('d/m/Y') }}"
-                                    >
-                                        {{ $movie->title }}
-                                    </option>
+                                        <option
+                                            value="{{ $movie->id }}"
+                                            data-duration="{{ $movie->duration }}"
+                                            data-genre="{{ $movie->genre }}"
+                                            data-release="{{ $movie->release_date?->format('d/m/Y') }}"
+                                            {{ old('movie_id', $showtime->movie_id) == $movie->id ? 'selected' : '' }}
+                                        >
+                                            {{ $movie->title }}
+                                        </option>
                                     @endforeach
+
                                 </select>
                                 <div id="movieInfo" class="mt-2 small text-light">
                                     Chưa chọn phim
@@ -70,18 +76,23 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">Phòng chiếu</label>
-                                <select class="form-control" id="roomSelect" name="room_id" required>
-                                    <option value="">Chọn phòng</option>
+                                <select
+                                    class="form-control"
+                                    id="roomSelect"
+                                    name="room_id"
+                                    required>
 
                                     @foreach($rooms as $room)
-                                    <option
-                                        value="{{ $room->id }}"
-                                        data-seats="{{ $room->total_seats }}"
-                                        data-vip-seats="{{ $room->getVipSeatCount() }}"
-                                    >
-                                        {{ $room->name }}
-                                    </option>
+                                        <option
+                                            value="{{ $room->id }}"
+                                            data-seats="{{ $room->total_seats }}"
+                                            data-vip-seats="{{ $room->getVipSeatCount() }}"
+                                            {{ old('room_id', $showtime->room_id) == $room->id ? 'selected' : '' }}
+                                        >
+                                            {{ $room->name }}
+                                        </option>
                                     @endforeach
+
                                 </select>
                                 <div id="roomInfo" class="mt-2 small text-light">
                                     Chưa chọn phòng
@@ -94,7 +105,7 @@
                                     id="startTime"
                                     name="start_time"
                                     class="form-control"
-                                    value="{{ old('start_time') }}"
+                                    value="{{ old('start_time', \Carbon\Carbon::parse($showtime->start_time)->format('Y-m-d\TH:i')) }}"
                                     required>
                             </div>
                             <div class="col-md-6">
@@ -104,16 +115,16 @@
                                     id="endTime"
                                     name="end_time"
                                     class="form-control"
+                                    value="{{ old('end_time', \Carbon\Carbon::parse($showtime->end_time)->format('Y-m-d\TH:i')) }}"
                                     readonly>
-                            </div>
                             <div class="col-md-12">
                                 <label class="form-label">Giá vé chuẩn</label>
-                                <input type="number"
+                                <input
+                                    type="number"
                                     name="price_standard"
                                     class="form-control"
                                     min="0"
-                                    value="100000"
-                                    placeholder="120000"
+                                    value="{{ old('price_standard', $showtime->price_standard) }}"
                                     required>
                             </div>
                         </div>
@@ -129,8 +140,14 @@
                         @endif
 
                         <div class="mt-4 d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">Lưu</button>
-                            <a href="{{ route('admin.showtimes.index') }}" class="btn btn-outline-light">Hủy</a>
+                            <button type="submit" class="btn btn-primary">
+                                Cập nhật
+                            </button>
+
+                            <a href="{{ route('admin.showtimes.index') }}"
+                            class="btn btn-outline-light">
+                                Hủy
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -255,6 +272,14 @@
     document.addEventListener('DOMContentLoaded', () => {
 
         const startInput = document.getElementById('startTime');
+        
+        if (movieSelect.value) {
+            movieSelect.dispatchEvent(new Event('change'));
+        }
+
+        if (roomSelect.value) {
+            roomSelect.dispatchEvent(new Event('change'));
+        }
 
         if (!startInput.value) {
 

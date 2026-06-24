@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Movie;
+use App\Models\Room;
+use App\Models\Showtime;
 use App\Services\ShowtimeService;
 use Illuminate\Http\Request;
 
@@ -19,8 +22,18 @@ class AdminShowtimeController extends Controller
      */
     public function index()
     {
-        return response()->json(
-            $this->showtimeService->getAllShowtimes()
+        $showtimes = $this->showtimeService->getAllShowtimes();
+
+        return view('admin.showtimes.index', compact('showtimes'));
+    }
+
+    public function show(int $id)
+    {
+        $showtime = $this->showtimeService->getShowtimeById($id);
+
+        return view(
+            'admin.showtimes.show',
+            compact('showtime')
         );
     }
 
@@ -29,9 +42,13 @@ class AdminShowtimeController extends Controller
      */
     public function create()
     {
-        return response()->json([
-            'message' => 'Create showtime page'
-        ]);
+        $movies = Movie::all();
+        $rooms = Room::all();
+
+        return view('admin.showtimes.create', compact(
+            'movies',
+            'rooms'
+        ));
     }
 
     /**
@@ -40,10 +57,10 @@ class AdminShowtimeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'movie_id' => 'required|integer',
-            'room_id' => 'required|integer',
+            'movie_id' => 'required|exists:movies,id',
+            'room_id' => 'required|exists:rooms,id',
             'start_time' => 'required|date',
-            'end_time' => 'required|date',
+            'end_time' => 'required|date|after:start_time',
             'price_standard' => 'required|numeric|min:0'
         ]);
 
@@ -57,28 +74,37 @@ class AdminShowtimeController extends Controller
 
         switch ($result) {
             case ShowtimeService::ERROR_START_TIME:
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Thời gian bắt đầu phải ở tương lai.'
-                ], 422);
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'start_time' => 'Thời gian bắt đầu phải ở tương lai.'
+                    ]);
+            
+            case ShowtimeService::ERROR_BEFORE_RELEASE:
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'start_time' => 'Thời gian chiếu phải sau ngày phát hành của phim.'
+                    ]);
 
             case ShowtimeService::ERROR_DURATION:
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Thời lượng suất chiếu ngắn hơn thời lượng phim.'
-                ], 422);
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'end_time' => 'Thời lượng suất chiếu ngắn hơn thời lượng phim.'
+                    ]);
 
             case ShowtimeService::ERROR_CONFLICT:
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Phòng đã có suất chiếu trong khoảng thời gian này.'
-                ], 422);
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'room_id' => 'Phòng đã có suất chiếu trong khoảng thời gian này.'
+                    ]);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $result
-        ]);
+        return redirect()
+            ->route('admin.showtimes.index')
+            ->with('success', 'Thêm lịch chiếu thành công.');
     }
 
     /**
@@ -86,8 +112,14 @@ class AdminShowtimeController extends Controller
      */
     public function edit(int $id)
     {
-        return response()->json(
-            $this->showtimeService->getShowtimeById($id)
+        $movies = Movie::all();
+        $rooms = Room::all();
+
+        $showtime = $this->showtimeService->getShowtimeById($id);
+
+        return view(
+            'admin.showtimes.edit',
+            compact('showtime', 'movies', 'rooms')
         );
     }
 
@@ -116,35 +148,46 @@ class AdminShowtimeController extends Controller
         );
 
         switch ($result) {
+
             case ShowtimeService::ERROR_START_TIME:
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Thời gian bắt đầu phải ở tương lai.'
-                ], 422);
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'start_time' => 'Thời gian bắt đầu phải ở tương lai.'
+                    ]);
+
+            case ShowtimeService::ERROR_BEFORE_RELEASE:
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'start_time' => 'Thời gian chiếu phải sau ngày phát hành của phim.'
+                    ]);
 
             case ShowtimeService::ERROR_DURATION:
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Thời lượng suất chiếu ngắn hơn thời lượng phim.'
-                ], 422);
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'end_time' => 'Thời lượng suất chiếu ngắn hơn thời lượng phim.'
+                    ]);
 
             case ShowtimeService::ERROR_CONFLICT:
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Phòng đã có suất chiếu trong khoảng thời gian này.'
-                ], 422);
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'room_id' => 'Phòng đã có suất chiếu trong khoảng thời gian này.'
+                    ]);
 
             case ShowtimeService::ERROR_HAS_TICKETS:
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Không thể sửa suất chiếu đã có vé.'
-                ], 422);
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'room_id' => 'Không thể sửa suất chiếu đã có vé.'
+                    ]);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $result
-        ]);
+        return redirect()
+            ->route('admin.showtimes.index')
+            ->with('success', 'Cập nhật lịch chiếu thành công.');
     }
 
     /**
@@ -155,15 +198,14 @@ class AdminShowtimeController extends Controller
         $result = $this->showtimeService->deleteShowtime($id);
 
         if ($result === ShowtimeService::ERROR_HAS_TICKETS) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không thể xóa suất chiếu đã có vé.'
-            ], 422);
+            return back()
+                ->withErrors([
+                    'showtime' => 'Không thể xóa suất chiếu đã có vé.'
+                ]);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Deleted successfully'
-        ]);
+        return redirect()
+            ->route('admin.showtimes.index')
+            ->with('success', 'Xóa suất chiếu thành công.');
     }
 }

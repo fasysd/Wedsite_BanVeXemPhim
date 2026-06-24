@@ -19,10 +19,40 @@ class AdminRoomController extends Controller
      */
     public function index()
     {
-        return response()->json([
-            'success' => true,
-            'data' => $this->roomService->getAllRooms()
-        ]);
+        $rooms = $this->roomService->getAllRooms();
+
+        return view('admin.rooms.index', compact('rooms'));
+    }
+
+    public function show(int $id)
+    {
+        $room = $this->roomService->getRoomById($id);
+
+        $seatPerRow = $room->seats()
+            ->where('seat_row', 'A')
+            ->count();
+
+        $rowCount = (int) (
+            $room->total_seats / max($seatPerRow, 1)
+        );
+
+        $vipSeats = $room->seats()
+            ->where('type', 'VIP')
+            ->get()
+            ->map(function ($seat) {
+                return $seat->seat_row . $seat->seat_number;
+            })
+            ->toArray();
+
+        return view(
+            'admin.rooms.show',
+            compact(
+                'room',
+                'rowCount',
+                'seatPerRow',
+                'vipSeats'
+            )
+        );
     }
 
     /**
@@ -30,9 +60,7 @@ class AdminRoomController extends Controller
      */
     public function create()
     {
-        return response()->json([
-            'message' => 'Create room page'
-        ]);
+        return view('admin.rooms.create');
     }
 
     /**
@@ -44,25 +72,30 @@ class AdminRoomController extends Controller
             'name' => 'required|max:255',
             'row_count' => 'required|integer|min:1|max:26',
             'seat_per_row' => 'required|integer|min:1',
+            'vip_seats' => 'nullable|string',
         ]);
 
         $result = $this->roomService->createRoom([
             'name' => $request->name,
             'row_count' => $request->row_count,
             'seat_per_row' => $request->seat_per_row,
+            'vip_seats' => json_decode(
+                $request->vip_seats ?? '[]',
+                true
+            ),
         ]);
 
         if ($result === RoomService::ERROR_DUPLICATE_NAME) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tên phòng đã tồn tại.'
-            ], 422);
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'name' => 'Tên phòng đã tồn tại.'
+                ]);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $result
-        ]);
+        return redirect()
+            ->route('admin.rooms.index')
+            ->with('success', 'Thêm phòng thành công.');
     }
 
     /**
@@ -70,10 +103,26 @@ class AdminRoomController extends Controller
      */
     public function edit(int $id)
     {
-        return response()->json([
-            'success' => true,
-            'data' => $this->roomService->getRoomById($id)
-        ]);
+        $room = $this->roomService->getRoomById($id);
+        $seatPerRow = $room->seats()
+            ->where('seat_row', 'A')
+            ->count();
+
+        $rowCount = $room->seats()->count() / $seatPerRow;
+
+        $vipSeats = $room->seats()
+            ->where('type', 'VIP')
+            ->get()
+            ->map(function ($seat) {
+                return $seat->seat_row . $seat->seat_number;
+            })
+            ->values()
+            ->toArray();
+
+        return view(
+            'admin.rooms.edit',
+            compact('room', 'rowCount', 'seatPerRow', 'vipSeats')
+        );
     }
 
     /**
@@ -85,6 +134,7 @@ class AdminRoomController extends Controller
             'name' => 'required|max:255',
             'row_count' => 'required|integer|min:1|max:26',
             'seat_per_row' => 'required|integer|min:1',
+            'vip_seats' => 'nullable|string',
         ]);
 
         $result = $this->roomService->updateRoom(
@@ -93,28 +143,33 @@ class AdminRoomController extends Controller
                 'name' => $request->name,
                 'row_count' => $request->row_count,
                 'seat_per_row' => $request->seat_per_row,
+                'vip_seats' => json_decode(
+                    $request->vip_seats ?? '[]',
+                    true
+                ),
             ]
         );
 
         switch ($result) {
 
             case RoomService::ERROR_DUPLICATE_NAME:
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tên phòng đã tồn tại.'
-                ], 422);
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'name' => 'Tên phòng đã tồn tại.'
+                    ]);
 
             case RoomService::ERROR_HAS_SHOWTIMES:
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Không thể sửa phòng đang có suất chiếu trong tương lai.'
-                ], 422);
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'general' => 'Không thể sửa phòng đang có suất chiếu trong tương lai.'
+                    ]);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $result
-        ]);
+        return redirect()
+            ->route('admin.rooms.index')
+            ->with('success', 'Cập nhật phòng thành công.');
     }
 
     /**
@@ -125,15 +180,14 @@ class AdminRoomController extends Controller
         $result = $this->roomService->deleteRoom($id);
 
         if ($result === RoomService::ERROR_HAS_SHOWTIMES) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không thể xóa phòng đang có suất chiếu trong tương lai.'
-            ], 422);
+
+            return back()->withErrors([
+                'general' => 'Không thể xóa phòng đang có suất chiếu trong tương lai.'
+            ]);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Xóa phòng thành công.'
-        ]);
+        return redirect()
+            ->route('admin.rooms.index')
+            ->with('success', 'Xóa phòng thành công.');
     }
 }
