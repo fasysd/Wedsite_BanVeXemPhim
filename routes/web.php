@@ -47,6 +47,28 @@ Route::get('/help/about', function () {
     Route::get('/welcome', function () {
         return view('home.index');
         });
+})->name('user.help.about');
+Route::get('/register', function () {
+    return view('user.register');
+})->name('register');
+Route::get('/account/general', function () {
+    return view('user.account.general');
+})->name('user.account.general');
+Route::get('/account/tickets', [TicketController::class, 'index'])->name('user.account.tickets');
+Route::get('/account/tickets/{id}', [TicketController::class, 'show'])->name('user.account.tickets.show');
+Route::post('/account/tickets/{id}/cancel', [TicketController::class, 'cancel'])->name('user.account.tickets.cancel');
+Route::post('/account/tickets/{id}/pay', [TicketController::class, 'payment'])->name('user.account.tickets.payment');
+Route::get('/account/detail', function () {
+    return view('user.account.detail');
+})->name('user.account.detail');
+Route::get('/movies/purchase_result', function () {
+    return view('movie.purchase_result');
+})->name('ticket.result');
+Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movie.show');
+
+Route::get('/welcome', function () {
+    return view('home.index');
+});
 
     Route::get('/movies', [MovieController::class, 'index'])
     ->name('movies');

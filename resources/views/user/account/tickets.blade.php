@@ -70,16 +70,16 @@
                                     @php
                                         $status = $ticket->status;
 
-                                        $statusClass = match($status) {
-                                            'PENDING' => 'status-pending',
-                                            'PAID' => 'status-paid',
-                                            'CANCELLED' => 'status-cancelled',
-                                            'EXPIRED' => 'status-expired',
-                                            default => 'status-default'
+                                          $statusClass = match($status) {
+                                            'HOLDING' => 'badge-warning',
+                                            'BOOKED' => 'badge-success',
+                                            'USED' => 'badge-info',
+                                            'CANCELLED' => 'badge-danger',
+                                            default => 'badge-dark'
                                         };
                                     @endphp
 
-                                    <tr class="ticket-row" data-id="{{ $ticket->id }}">
+                                    <tr class="ticket-row" data-id="{{ $ticket->id }}" style="cursor: pointer;">
 
                                         <td>
                                             #{{ $ticket->id }}

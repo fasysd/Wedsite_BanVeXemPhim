@@ -167,7 +167,40 @@ class TicketController extends Controller
     {
         //
     }
+  public function cancel(string $id)
+    {
+    $ticket = TicketDetail::where('id', $id)
+        ->whereHas('booking', function ($query) {
+            $query->where('user_id', Auth::id());
+        })
+        ->firstOrFail();
+    if ($ticket->status === 'HOLDING' || $ticket->status === 'BOOKED') {
 
+        $ticket->update([
+            'status' => 'CANCELLED'
+        ]);
+
+    }
+    return redirect()
+        ->route('user.account.tickets.show', $ticket->id)
+        ->with('success', 'Hủy vé thành công');
+    }
+    public function payment(string $id)
+    {
+        $ticket = TicketDetail::where('id', $id)
+            ->whereHas('booking', function ($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->firstOrFail();
+        if ($ticket->status === 'HOLDING') {
+            $ticket->update([
+                'status' => 'BOOKED'
+            ]);
+        }
+        return redirect()
+            ->route('user.account.tickets.show', $ticket->id)
+            ->with('success', 'Thanh toán vé thành công');
+    }
     /**
      * Remove the specified resource from storage.
      */
