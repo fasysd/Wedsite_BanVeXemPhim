@@ -91,6 +91,14 @@
                         </div>
                     </div>
                     <div class="table-responsive rounded-4 shadow-sm">
+
+                        @if(session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ session('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
+
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
