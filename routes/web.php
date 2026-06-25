@@ -15,18 +15,7 @@ Route::get('/', function () {
 Route::get('/help/about', function () {
     return view('user.help.about');
 })->name('user.help.about');
-Route::get('/register', function () {
-    return view('user.register');
-})->name('register');
-Route::get('/account/general', function () {
-    return view('user.account.general');
-})->name('user.account.general');
-Route::get('/account/tickets', function () {
-    return view('user.account.tickets');
-})->name('user.account.tickets');
-Route::get('/account/detail', function () {
-    return view('user.account.detail');
-})->name('user.account.detail');
+
 Route::get('/welcome', function () {
     return view('home.index');
 });
@@ -66,6 +55,10 @@ Route::delete('/admin/showtimes/{id}', [AdminShowtimeController::class, 'destroy
     ->name('admin.showtimes.destroy');
 
 
-Route::redirect('/staff', '/staff/bookings');
-Route::view('/staff/bookings', 'staff.bookings')->name('staff.bookings');
-Route::view('/staff/tickets', 'staff.tickets')->name('staff.tickets');
+        Route::get('/staff', [AdminStaffController::class, 'index'])->name('staff.index');
+        Route::get('/staff/create', [AdminStaffController::class, 'create'])->name('staff.create');
+        Route::post('/staff', [AdminStaffController::class, 'store'])->name('staff.store');
+        Route::get('/staff/{staff}/edit', [AdminStaffController::class, 'edit'])->name('staff.edit');
+        Route::put('/staff/{staff}', [AdminStaffController::class, 'update'])->name('staff.update');
+        Route::put('/staff/{staff}/reset-password', [AdminStaffController::class, 'resetPassword'])->name('staff.reset-password');
+    });

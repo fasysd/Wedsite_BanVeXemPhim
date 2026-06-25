@@ -1,15 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
-@php
-    $user = (object)[
-        'username' => 'vandong',
-        'full_name' => 'Mưu Văn Đồng',
-        'email' => 'dong2000113@gmail.com'
-    ];
-@endphp
-
 <div class="account-page">
 
     <div class="container py-5">
@@ -25,7 +16,7 @@
 
                 <div class="list-group">
 
-                    <a href="{{ route('user.account.general') }}" class="list-group-item account-menu active">
+                    <a href="{{ route('user.account.general') }}" class="list-group-item account-menu">
                         Thông tin chung
                     </a>
 
@@ -33,7 +24,7 @@
                         Thông tin chi tiết
                     </a>
 
-                    <a href="{{ route('user.account.tickets') }}" class="list-group-item account-menu">
+                    <a href="{{ route('user.account.tickets') }}" class="list-group-item account-menu active">
                         Vé của tôi
                     </a>
 
@@ -47,16 +38,14 @@
                 <div class="account-content">
 
                     <div class="account-header">
-                        THÔNG TIN CHUNG
+                        CHI TIẾT VÉ
                     </div>
 
-                    <div>
-
-                        <p class="mb-3">
-                            <strong>Xin chào,</strong>
-                            {{ $user->username }}
-                        </p>
-
+                    <div class="ticket-table-wrapper">
+                        <p><strong>Mã vé:</strong> {{ $ticket->booking_id }}</p>
+                        <p><strong>Ghế:</strong> {{ $ticket->seat_id }}</p>
+                        <p><strong>Giá:</strong> {{ number_format($ticket->final_price, 0, ',', '.') }}đ</p>
+                        <p><strong>Trạng thái:</strong> {{ $ticket->status }}</p>
                     </div>
 
                 </div>
@@ -68,5 +57,4 @@
     </div>
 
 </div>
-
 @endsection

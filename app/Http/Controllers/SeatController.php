@@ -2,34 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\Movie;
-class MovieController extends Controller
+use App\Models\Seat;
+class SeatController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        if (Auth::check() && Auth::user()->role === 'ADMIN') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        $movies = Movie::all();
-        return view('user.index', compact('movies'));
+        // $seats = Seat::all();
+        // return view('seat.index', compact('seats'));
     }
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         //
-    }
-    public static function getSuggestedMovies()
-    {
-        $movies = Movie::all();
-        return $movies;
     }
 
     /**
@@ -45,8 +36,7 @@ class MovieController extends Controller
      */
     public function show(string $id)
     {
-        $movie = Movie::findOrFail($id);
-        return view('movie.show', compact('movie'));
+        //
     }
 
     /**

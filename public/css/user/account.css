@@ -100,3 +100,6 @@
     background:#17b95d;
     font-size:14px;
 }
+.ticket-row{
+    cursor:pointer;
+}

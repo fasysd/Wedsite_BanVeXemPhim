@@ -36,16 +36,17 @@
       <nav class="nav flex-column">
         <a class="nav-link" href="{{ route('staff.bookings') }}">Danh sách đặt vé</a>
         <a class="nav-link active" href="{{ route('staff.tickets') }}">Tra cứu vé</a>
+        <a class="nav-link" href="{{ route('user.account.general') }}">Thông tin tài khoản</a>
+        <form method="POST" action="{{ route('logout') }}" class="mt-2">
+          @csrf
+          <button type="submit" class="btn btn-outline-danger btn-sm w-100 text-start">Đăng xuất</button>
+        </form>
       </nav>
     </aside>
     <main class="col-lg-10 p-4">
       <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
         <div>
           <h4 class="mb-1">Tra cứu vé</h4>
-        </div>
-        <div class="d-flex gap-2">
-          <button class="btn btn-outline-light btn-sm" disabled>Đăng nhập</button>
-          <button class="btn btn-outline-light btn-sm" disabled>Đăng xuất</button>
         </div>
       </div>
       <div class="row g-4 mb-4">

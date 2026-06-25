@@ -8,38 +8,10 @@
         'https://picsum.photos/1200/400?random=13',
     ];
 
-    $movies = [
-        (object)[
-            'poster' => 'https://picsum.photos/300/450?random=1',
-            'title' => 'Avengers: Endgame',
-            'release_date' => '26/04/2019',
-            'genres' => ['Action', 'Adventure', 'Sci-Fi']
-        ],
-        (object)[
-            'poster' => 'https://picsum.photos/300/450?random=2',
-            'title' => 'Spider-Man: No Way Home',
-            'release_date' => '17/12/2021',
-            'genres' => ['Action', 'Fantasy']
-        ],
-        (object)[
-            'poster' => 'https://picsum.photos/300/450?random=3',
-            'title' => 'The Batman',
-            'release_date' => '04/03/2022',
-            'genres' => ['Action', 'Crime']
-        ],
-        (object)[
-            'poster' => 'https://picsum.photos/300/450?random=4',
-            'title' => 'Interstellar',
-            'release_date' => '07/11/2014',
-            'genres' => ['Sci-Fi', 'Drama']
-        ],
-        (object)[
-            'poster' => 'https://picsum.photos/300/450?random=5',
-            'title' => 'Inception',
-            'release_date' => '16/07/2010',
-            'genres' => ['Sci-Fi', 'Thriller']
-        ],
-    ];
+    foreach($movies as $movie) {
+        $movie->genres = explode(',', $movie->genre);
+        $movie->image_path = asset('images/movieavatar.webp');
+    }
 @endphp
 
 <div class="container-fluid movie-index-page text-dark p-0">
@@ -109,93 +81,10 @@
         </div>
 
     </section>
-
-    {{-- =======================
-         MOVIE CONTENT
-    ======================== --}}
     <div class="container py-5">
-
-        <section class="movie-section">
-
-            <h2 class="movie-section-title">
-                Phim đang chiếu tại CineGo
-            </h2>
-
-            <div class="movie-row">
-
-                @foreach($movies as $movie)
-
-                    <div class="movie-item">
-
-                        <x-movie-card
-                            :image="$movie->poster"
-                            :title="$movie->title"
-                            :release-date="$movie->release_date"
-                            :genres="$movie->genres"
-                        />
-
-                    </div>
-
-                @endforeach
-
-            </div>
-
-        </section>
-
-        <section class="movie-section">
-
-            <h2 class="movie-section-title">
-                Gợi ý cho bạn
-            </h2>
-
-            <div class="movie-row">
-
-                @foreach($movies as $movie)
-
-                    <div class="movie-item">
-
-                        <x-movie-card
-                            :image="$movie->poster"
-                            :title="$movie->title"
-                            :release-date="$movie->release_date"
-                            :genres="$movie->genres"
-                        />
-
-                    </div>
-
-                @endforeach
-
-            </div>
-
-        </section>
-
-        <section class="movie-section">
-
-            <h2 class="movie-section-title">
-                Phim sắp khởi chiếu
-            </h2>
-
-            <div class="movie-row">
-
-                @foreach($movies as $movie)
-
-                    <div class="movie-item">
-
-                        <x-movie-card
-                            :image="$movie->poster"
-                            :title="$movie->title"
-                            :release-date="$movie->release_date"
-                            :genres="$movie->genres"
-                        />
-
-                    </div>
-
-                @endforeach
-
-            </div>
-
-        </section>
-
+        <x-movie-suggestion-layout :movies="$movies" title="Phim đang chiếu tại CineGo" />
+        <x-movie-suggestion-layout :movies="$movies" title="Gợi ý cho bạn" />
+        <x-movie-suggestion-layout :movies="$movies" title="Phim sắp chiếu" />
     </div>
 
 </div>

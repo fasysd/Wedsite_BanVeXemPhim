@@ -1,14 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use  App\Models\Booking;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
-    /*
-    Thực hiện:
-        Đặt vé
-        Hủy vé
-    */
+    public function getExpireTime(int $id)
+    {
+    //     return Booking::where('id', $id)
+    //    ->where('status', 'PENDING')
+    //    ->first()?->expired_at;
+    }
 }

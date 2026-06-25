@@ -1,41 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
-@php
-    $user = (object)[
-        'username' => 'vandong',
-        'full_name' => 'Mưu Văn Đồng',
-        'email' => 'dong2000113@gmail.com'
-    ];
-    $tickets = [
-    (object)[
-        'movie' => 'Avengers: Endgame',
-        'date' => '15/06/2026 19:30',
-        'price' => '120.000đ',
-        'status' => 'Đã thanh toán'
-    ],
-    (object)[
-        'movie' => 'Spider-Man: No Way Home',
-        'date' => '12/06/2026 20:00',
-        'price' => '100.000đ',
-        'status' => 'Đã sử dụng'
-    ],
-    (object)[
-        'movie' => 'The Batman',
-        'date' => '10/06/2026 18:45',
-        'price' => '110.000đ',
-        'status' => 'Đã hủy'
-    ],
-    (object)[
-        'movie' => 'Interstellar',
-        'date' => '08/06/2026 21:00',
-        'price' => '150.000đ',
-        'status' => 'Đã thanh toán'
-    ],
-];
-@endphp
-
 <div class="account-page">
 
     <div class="container py-5">
@@ -52,11 +17,7 @@
                 <div class="list-group">
 
                     <a href="{{ route('user.account.general') }}" class="list-group-item account-menu">
-                        Thông tin chung
-                    </a>
-
-                    <a href="{{ route('user.account.detail') }} " class="list-group-item account-menu">
-                        Thông tin chi tiết
+                        Thông tin tài khoản
                     </a>
 
                     <a href="{{ route('user.account.tickets') }}" class="list-group-item account-menu active">
@@ -81,7 +42,7 @@
                         <table class="ticket-table">
 
                             <thead>
-                                <tr>
+                                <tr >
                                     <th>Vé</th>
                                     <th>Ngày đặt</th>
                                     <th>Giá</th>
@@ -90,12 +51,18 @@
                             </thead>
 
                             <tbody>
-
-                                @foreach($tickets as $ticket)
+                                @if($tickets->isEmpty())
                                     <tr>
-                                        <td>{{ $ticket->movie }}</td>
-                                        <td>{{ $ticket->date }}</td>
-                                        <td>{{ $ticket->price }}</td>
+                                        <td colspan="4" class="text-center py-4">
+                                            Bạn chưa có vé nào.
+                                        </td>
+                                    </tr>
+                                @endif
+                                @foreach($tickets as $ticket)
+                                    <tr class="ticket-row" data-id="{{ $ticket->id }}">
+                                        <td>{{ $ticket->booking_id }}</td>
+                                        <td>{{ $ticket->seat_id }}</td>
+                                        <td>{{ number_format($ticket->final_price, 0, ',', '.') }}đ</td>
                                         <td>
                                             <span class="ticket-status">
                                                 {{ $ticket->status }}
@@ -119,5 +86,14 @@
     </div>
 
 </div>
+<script>
+    // Thêm sự kiện click cho các hàng vé
+    document.querySelectorAll('.ticket-row').forEach(row => {
+        row.addEventListener('click', () => {
+            const id = row.getAttribute('data-id');
+            window.location.href = `/account/tickets/${id}`; // Chuyển hướng đến trang chi tiết vé
+        });
+    });
+</script>
 
 @endsection
