@@ -42,6 +42,7 @@
                     </div>
                 </div>
                 <nav class="nav flex-column">
+                    <a class="nav-link" href="{{ route('admin.dashboard') }}">Trang chủ</a>
                     <a class="nav-link" href="{{ route('admin.movies.index') }}">Quản lý phim</a>
                     <a class="nav-link active" href="{{ route('admin.showtimes.index') }}">Quản lý lịch chiếu</a>
                     <a class="nav-link" href="{{ route('admin.rooms.index') }}">Quản lý phòng chiếu</a>

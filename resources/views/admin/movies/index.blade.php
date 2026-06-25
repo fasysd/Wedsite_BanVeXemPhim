@@ -20,6 +20,9 @@
         .table tbody td { border-color: #e2e8f0; color: #000000 !important; }
         .text-muted { color: #94a3b8 !important; }
         .table-hover tbody tr:hover { background: #f1f5f9; }
+        .movie-detail-row { cursor: pointer; }
+        .movie-detail-row td { transition: background 0.15s ease; }
+        .movie-detail-row:hover td { background: #e2e8f0; }
     </style>
 </head>
 <body>
@@ -36,6 +39,7 @@
                     </div>
                 </div>
                 <nav class="nav flex-column">
+                    <a class="nav-link" href="{{ route('admin.dashboard') }}">Trang chủ</a>
                     <a class="nav-link active" href="{{ route('admin.movies.index') }}">Quản lý phim</a>
                     <a class="nav-link" href="{{ route('admin.showtimes.index') }}">Quản lý lịch chiếu</a>
                     <a class="nav-link" href="{{ route('admin.rooms.index') }}">Quản lý phòng chiếu</a>
@@ -55,10 +59,16 @@
                             <p class="text-muted mb-0">Xem, tìm kiếm và quản lý phim nhanh chóng.</p>
                         </div>
                         <div class="d-flex gap-2">
-                            <input id="movieSearch" type="search" class="form-control form-control-sm" placeholder="Tìm theo tên phim..." style="min-width:320px;" disabled>
-                            <button type="button" class="btn btn-outline-light btn-sm" disabled>Tìm</button>
-                            <a href="{{ route('admin.movies.create') }}" class="btn btn-success btn-sm">Thêm phim mới</a>
+                            <form action="{{ route('admin.movies.index') }}" method="GET" class="d-flex gap-2">
+                                <input id="movieSearch" type="search" name="q" class="form-control form-control-sm" placeholder="Tìm theo tên phim..." style="min-width:320px;" value="{{ request('q') }}">
+                                <button type="submit" class="btn btn-outline-light btn-sm">Tìm</button>
+                            </form>
+                            <button type="button" id="addMovieBtn" class="btn btn-success btn-sm">Thêm phim mới</button>
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Gõ ký tự để hiển thị phim bắt đầu bằng chữ đó.</small>
+                    </div>
                     </div>
                     <div class="row g-3 mb-4">
                         <div class="col-md-4">
@@ -95,46 +105,38 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="small text-muted">1</td>
-                                    <td>
-                                        <img src="https://via.placeholder.com/72x100.png?text=Phim" alt="Phim mẫu" class="movie-poster shadow-sm">
-                                    </td>
-                                    <td style="min-width:220px">
-                                        <div>
-                                            <strong>Cuộc chiến rạp chiếu</strong>
-                                            <div class="small text-muted">Hành động, giả tưởng</div>
-                                        </div>
-                                    </td>
-                                    <td class="text-muted small">Phim bom tấn mùa hè, chiến binh rạp chiếu.</td>
-                                    <td>Hành động</td>
-                                    <td>15/06/2026</td>
-                                    <td>120 phút</td>
-                                    <td class="text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-primary me-1" disabled>Sửa</button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" disabled>Xóa</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="small text-muted">2</td>
-                                    <td>
-                                        <img src="https://via.placeholder.com/72x100.png?text=Phim" alt="Phim mẫu" class="movie-poster shadow-sm">
-                                    </td>
-                                    <td style="min-width:220px">
-                                        <div>
-                                            <strong>Thiên nhiên đen tối</strong>
-                                            <div class="small text-muted">Kinh dị, tâm lý</div>
-                                        </div>
-                                    </td>
-                                    <td class="text-muted small">Chuyến phiêu lưu rùng rợn trong một rạp tối.</td>
-                                    <td>Kinh dị</td>
-                                    <td>22/06/2026</td>
-                                    <td>98 phút</td>
-                                    <td class="text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-primary me-1" disabled>Sửa</button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" disabled>Xóa</button>
-                                    </td>
-                                </tr>
+                                @forelse($movies as $movie)
+                                    <tr class="movie-detail-row" data-detail-url="{{ route('admin.movies.show', $movie) }}?modal=1">
+                                        <td class="small text-muted">{{ $movie->id }}</td>
+                                        <td>
+                                            <img src="{{ $movie->image_path ?: asset('images/movieavatar.webp') }}" alt="{{ $movie->title }}" class="movie-poster shadow-sm" onerror="this.src='{{ asset('images/movieavatar.webp') }}';">
+                                        </td>
+                                        <td style="min-width:220px">
+                                            <div>
+                                                <strong>{{ $movie->title }}</strong>
+                                                <div class="small text-muted">{{ $movie->genre ?? '-' }}</div>
+                                            </div>
+                                        </td>
+                                        <td class="text-muted small">{{ 
+                                            Illuminate\Support\Str::limit($movie->description ?? '-', 80)
+                                        }}</td>
+                                        <td>{{ $movie->genre ?? '-' }}</td>
+                                        <td>{{ $movie->release_date?->format('d/m/Y') ?? '-' }}</td>
+                                        <td>{{ $movie->duration ? $movie->duration . ' phút' : '-' }}</td>
+                                        <td class="text-end">
+                                            <button type="button" data-edit-url="{{ route('admin.movies.edit', $movie) }}?modal=1" class="btn btn-sm btn-outline-primary me-1 editMovieBtn">Sửa</button>
+                                            <form action="{{ route('admin.movies.destroy', $movie) }}" method="POST" style="display:inline" onsubmit="return confirm('Bạn chắc chắn muốn xóa phim này?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">Không có phim nào.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -142,5 +144,78 @@
             </main>
         </div>
     </div>
+
+    <div class="modal fade" id="movieModal" tabindex="-1" aria-labelledby="movieModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="movieModalLabel"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="movieModalBody">
+                    <div class="text-center py-5 text-muted">
+                        Đang tải...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const movieModal = new bootstrap.Modal(document.getElementById('movieModal'));
+        const movieModalLabel = document.getElementById('movieModalLabel');
+        const movieModalBody = document.getElementById('movieModalBody');
+
+        async function loadMovieForm(url, title) {
+            movieModalLabel.textContent = title;
+            movieModalBody.innerHTML = '<div class="text-center py-5 text-muted">Đang tải...</div>';
+            movieModal.show();
+
+            try {
+                const response = await fetch(url, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const html = await response.text();
+                movieModalBody.innerHTML = html;
+            } catch (error) {
+                movieModalBody.innerHTML = '<div class="text-danger">Không thể tải form. Vui lòng thử lại.</div>';
+            }
+        }
+
+        const movieSearchInput = document.getElementById('movieSearch');
+        const movieRows = document.querySelectorAll('tbody tr');
+
+        function filterMovieRows() {
+            const query = movieSearchInput.value.trim().toLowerCase();
+            movieRows.forEach(row => {
+                const title = row.querySelector('td:nth-child(3) strong')?.textContent.trim().toLowerCase() || '';
+                const match = query === '' || title.startsWith(query);
+                row.style.display = match ? '' : 'none';
+            });
+        }
+
+        movieSearchInput.addEventListener('input', filterMovieRows);
+
+        document.getElementById('addMovieBtn').addEventListener('click', () => {
+            loadMovieForm('{{ route('admin.movies.create') }}?modal=1', 'Thêm phim mới');
+        });
+
+        document.querySelectorAll('.movie-detail-row').forEach(row => {
+            row.addEventListener('click', event => {
+                if (event.target.closest('button') || event.target.closest('form')) {
+                    return;
+                }
+                loadMovieForm(row.dataset.detailUrl, 'Chi tiết phim');
+            });
+        });
+
+        document.querySelectorAll('.editMovieBtn').forEach(button => {
+            button.addEventListener('click', event => {
+                event.stopPropagation();
+                loadMovieForm(button.dataset.editUrl, 'Sửa phim');
+            });
+        });
+    </script>
 </body>
 </html>

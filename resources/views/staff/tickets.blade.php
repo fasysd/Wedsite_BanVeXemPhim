@@ -50,55 +50,72 @@
         </div>
       </div>
       <div class="row g-4 mb-4">
-        <div class="col-lg-6">
-          <div class="section-card card p-4">
-            <h5 class="mb-3">Thông tin vé</h5>
-            <div class="row g-3">
-              <div class="col-6">
-                <small class="text-muted">Mã vé</small>
-                <div>VE-2026-001</div>
+        <div class="col-lg-12">
+          <form method="GET" action="{{ route('staff.tickets') }}" class="card p-4 section-card mb-4">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-4">
+                <label class="form-label small text-muted">Tìm theo mã vé</label>
+                <input type="text" name="q" class="form-control form-control-sm" placeholder="Nhập ID vé" value="{{ $query }}">
               </div>
-              <div class="col-6">
-                <small class="text-muted">Phòng</small>
-                <div>Rạp 3</div>
+              <div class="col-md-4">
+                <button class="btn btn-primary btn-sm">Tìm vé</button>
+                <a href="{{ route('staff.tickets') }}" class="btn btn-outline-light btn-sm">Xóa</a>
               </div>
-              <div class="col-6">
-                <small class="text-muted">Ghế</small>
-                <div>B5</div>
-              </div>
-              <div class="col-6">
-                <small class="text-muted">Status</small>
-                <div>Đã xác nhận</div>
-              </div>
-              <div class="col-12">
-                <small class="text-muted">Phim</small>
-                <div>Cuộc chiến rạp chiếu</div>
+            </div>
+          </form>
+        </div>
+
+        @if($ticket)
+          <div class="col-lg-6">
+            <div class="section-card card p-4">
+              <h5 class="mb-3">Thông tin vé</h5>
+              <div class="row g-3">
+                <div class="col-6">
+                  <small class="text-muted">Mã vé</small>
+                  <div>{{ $ticket->id }}</div>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted">Phòng</small>
+                  <div>{{ $ticket->showtime?->room?->name ?? 'Chưa rõ' }}</div>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted">Ghế</small>
+                  <div>{{ $ticket->seat?->label ?? 'Chưa rõ' }}</div>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted">Trạng thái</small>
+                  <div>{{ $ticket->status }}</div>
+                </div>
+                <div class="col-12">
+                  <small class="text-muted">Phim</small>
+                  <div>{{ $ticket->showtime?->movie?->title ?? 'Chưa rõ' }}</div>
+                </div>
+                <div class="col-12">
+                  <small class="text-muted">Khách hàng</small>
+                  <div>{{ $ticket->booking?->user?->full_name ?? $ticket->booking?->user?->username ?? 'Chưa rõ' }}</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="section-card card p-4">
-            <h5 class="mb-3">Cập nhật trạng thái</h5>
-            <div class="mb-3">
-              <label class="form-label small text-muted">Mã vé</label>
-              <input type="text" class="form-control form-control-sm" value="VE-2026-001" disabled>
-            </div>
-            <div class="mb-3">
-              <label class="form-label small text-muted">Chọn trạng thái</label>
-              <select class="form-select form-select-sm" disabled>
-                <option selected>Đã xác nhận</option>
-                <option>Đã sử dụng</option>
-                <option>Hủy vé</option>
-                <option>Đang chờ</option>
-              </select>
-            </div>
-            <div class="d-flex gap-2">
-              <button class="btn btn-primary btn-sm" disabled>Cập nhật</button>
-              <button class="btn btn-outline-light btn-sm" disabled>Hủy</button>
+          <div class="col-lg-6">
+            <div class="section-card card p-4">
+              <h5 class="mb-3">Cập nhật trạng thái</h5>
+              <form method="POST" action="{{ route('staff.tickets.updateStatus', $ticket) }}">
+                @csrf
+                <div class="mb-3">
+                  <label class="form-label small text-muted">Chọn trạng thái</label>
+                  <select name="status" class="form-select form-select-sm" required>
+                    @foreach($statuses as $value => $label)
+                      <option value="{{ $value }}" {{ $ticket->status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                <button class="btn btn-primary btn-sm">Cập nhật</button>
+                <a href="{{ route('staff.tickets') }}" class="btn btn-outline-light btn-sm">Quay lại</a>
+              </form>
             </div>
           </div>
-        </div>
+        @endif
       </div>
       <div class="table-responsive rounded-4 shadow-sm">
         <table class="table table-hover align-middle mb-0">
@@ -112,27 +129,21 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>VE-2026-001</td>
-              <td>Cuộc chiến rạp chiếu</td>
-              <td>B5</td>
-              <td>Đã xác nhận</td>
-              <td><button class="btn btn-sm btn-outline-primary" disabled>Cập nhật</button></td>
-            </tr>
-            <tr>
-              <td>VE-2026-002</td>
-              <td>Thiên nhiên đen tối</td>
-              <td>C9</td>
-              <td>Đang chờ</td>
-              <td><button class="btn btn-sm btn-outline-primary" disabled>Cập nhật</button></td>
-            </tr>
-            <tr>
-              <td>VE-2026-003</td>
-              <td>Ngày mới trong rạp</td>
-              <td>A2</td>
-              <td>Đã sử dụng</td>
-              <td><button class="btn btn-sm btn-outline-primary" disabled>Cập nhật</button></td>
-            </tr>
+            @forelse($tickets as $ticketItem)
+              <tr>
+                <td>{{ $ticketItem->id }}</td>
+                <td>{{ $ticketItem->showtime?->movie?->title ?? 'Chưa rõ' }}</td>
+                <td>{{ $ticketItem->seat?->label ?? 'Chưa rõ' }}</td>
+                <td>{{ $ticketItem->status }}</td>
+                <td>
+                  <a href="{{ route('staff.tickets.show', $ticketItem) }}" class="btn btn-sm btn-outline-primary">Cập nhật</a>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="5" class="text-center py-4">Không có vé nào.</td>
+              </tr>
+            @endforelse
           </tbody>
         </table>
       </div>
