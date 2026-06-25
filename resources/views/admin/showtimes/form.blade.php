@@ -28,9 +28,14 @@
                 <nav class="nav flex-column">
                     <a class="nav-link" href="{{ route('admin.dashboard') }}">Trang chủ</a>
                     <a class="nav-link" href="{{ route('admin.movies.index') }}">Quản lý phim</a>
-                    <a class="nav-link" href="{{ route('admin.showtimes.index') }}">Quản lý lịch chiếu</a>
+                    <a class="nav-link active" href="{{ route('admin.showtimes.index') }}">Quản lý lịch chiếu</a>
                     <a class="nav-link" href="{{ route('admin.rooms.index') }}">Quản lý phòng chiếu</a>
                     <a class="nav-link" href="{{ route('admin.staff.index') }}">Quản lý nhân viên</a>
+                    <a class="nav-link" href="{{ route('user.account.general') }}">Xem thông tin</a>
+                    <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-danger btn-sm w-100 text-start">Đăng xuất</button>
+                    </form>
                 </nav>
                 <div class="mt-4 pt-4 border-top border-secondary-subtle">
                     <div class="small text-muted mb-2">Tài khoản</div>

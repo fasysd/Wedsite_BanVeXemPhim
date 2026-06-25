@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
-use App\Http\Controllers\AdminMovieController;
 use App\Http\Controllers\AdminRoomController;
 use App\Http\Controllers\AdminShowtimeController;
 use App\Http\Controllers\AdminMovieController;
@@ -74,11 +73,20 @@ Route::middleware('auth')->group(function () {
         ->name('user.account.tickets.show');
 });
 
+// ---Post routes---
+Route::get('/movies/{movie}/booking', [TicketController::class, 'booking'])->name('ticket.booking')->middleware('auth');
+
 /*
 |--------------------------------------------------------------------------
 | STAFF
 |--------------------------------------------------------------------------
 */
+Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(function () {
+    Route::get('/bookings', [StaffController::class, 'bookings'])->name('bookings');
+    Route::get('/tickets', [StaffController::class, 'tickets'])->name('tickets');
+    Route::get('/tickets/{ticket}', [StaffController::class, 'show'])->name('tickets.show');
+    Route::post('/tickets/{ticket}/status', [StaffController::class, 'updateStatus'])->name('tickets.updateStatus');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -90,86 +98,53 @@ Route::middleware(['auth', 'admin'])
     ->name('admin.')
     ->group(function () {
 
-        /*
-        | Dashboard
-        */
-        Route::redirect('/', '/admin/rooms')->name('admin.dashboard');
+        Route::get('/', [AdminMovieController::class, 'home'])
+            ->name('dashboard');
 
         /*
         | Movies
         */
-        Route::view('/movies', 'admin.movies.index')
-            ->name('movies.index');
+        Route::get('/movies', [AdminMovieController::class, 'index'])->name('movies.index');
+        Route::get('/movies/create', [AdminMovieController::class, 'create'])->name('movies.create');
+        Route::post('/movies', [AdminMovieController::class, 'store'])->name('movies.store');
+        Route::get('/movies/{movie}', [AdminMovieController::class, 'show'])->name('movies.show');
+        Route::get('/movies/{movie}/edit', [AdminMovieController::class, 'edit'])->name('movies.edit');
+        Route::put('/movies/{movie}', [AdminMovieController::class, 'update'])->name('movies.update');
+        Route::delete('/movies/{movie}', [AdminMovieController::class, 'destroy'])->name('movies.destroy');
 
         /*
         | Rooms
         */
-        Route::get('/rooms', [AdminRoomController::class, 'index'])
-            ->name('rooms.index');
-
-        Route::get('/rooms/create', [AdminRoomController::class, 'create'])
-            ->name('rooms.create');
-
-        Route::post('/rooms', [AdminRoomController::class, 'store'])
-            ->name('rooms.store');
-
-        Route::get('/rooms/{id}/edit', [AdminRoomController::class, 'edit'])
-            ->name('rooms.edit');
-
-        Route::get('/rooms/{id}', [AdminRoomController::class, 'show'])
-            ->name('rooms.show');
-
-        Route::put('/rooms/{id}', [AdminRoomController::class, 'update'])
-            ->name('rooms.update');
-
-        Route::delete('/rooms/{id}', [AdminRoomController::class, 'destroy'])
-            ->name('rooms.destroy');
+        Route::get('/rooms', [AdminRoomController::class, 'index'])->name('rooms.index');
+        Route::get('/rooms/create', [AdminRoomController::class, 'create'])->name('rooms.create');
+        Route::post('/rooms', [AdminRoomController::class, 'store'])->name('rooms.store');
+        Route::get('/rooms/{id}', [AdminRoomController::class, 'show'])->name('rooms.show');
+        Route::get('/rooms/{id}/edit', [AdminRoomController::class, 'edit'])->name('rooms.edit');
+        Route::put('/rooms/{id}', [AdminRoomController::class, 'update'])->name('rooms.update');
+        Route::delete('/rooms/{id}', [AdminRoomController::class, 'destroy'])->name('rooms.destroy');
 
         /*
         | Showtimes
         */
-        Route::get('/showtimes', [AdminShowtimeController::class, 'index'])
-            ->name('showtimes.index');
-
-        Route::get('/showtimes/create', [AdminShowtimeController::class, 'create'])
-            ->name('showtimes.create');
-
-        Route::post('/showtimes', [AdminShowtimeController::class, 'store'])
-            ->name('showtimes.store');
-
-        Route::get('/showtimes/{id}', [AdminShowtimeController::class, 'show'])
-            ->name('showtimes.show');
-
-        Route::get('/showtimes/{id}/edit', [AdminShowtimeController::class, 'edit'])
-            ->name('showtimes.edit');
-
-        Route::put('/showtimes/{id}', [AdminShowtimeController::class, 'update'])
-            ->name('showtimes.update');
-
-        Route::delete('/showtimes/{id}', [AdminShowtimeController::class, 'destroy'])
-            ->name('showtimes.destroy');
+        Route::get('/showtimes', [AdminShowtimeController::class, 'index'])->name('showtimes.index');
+        Route::get('/showtimes/create', [AdminShowtimeController::class, 'create'])->name('showtimes.create');
+        Route::post('/showtimes', [AdminShowtimeController::class, 'store'])->name('showtimes.store');
+        Route::get('/showtimes/{id}', [AdminShowtimeController::class, 'show'])->name('showtimes.show');
+        Route::get('/showtimes/{id}/edit', [AdminShowtimeController::class, 'edit'])->name('showtimes.edit');
+        Route::put('/showtimes/{id}', [AdminShowtimeController::class, 'update'])->name('showtimes.update');
+        Route::delete('/showtimes/{id}', [AdminShowtimeController::class, 'destroy'])->name('showtimes.destroy');
 
         /*
         | Staff
         */
-        Route::get('/staff', [AdminStaffController::class, 'index'])
-            ->name('staff.index');
-
-        Route::get('/staff/create', [AdminStaffController::class, 'create'])
-            ->name('staff.create');
-
-        Route::post('/staff', [AdminStaffController::class, 'store'])
-            ->name('staff.store');
-
-        Route::get('/staff/{staff}/edit', [AdminStaffController::class, 'edit'])
-            ->name('staff.edit');
-
-        Route::put('/staff/{staff}', [AdminStaffController::class, 'update'])
-            ->name('staff.update');
-
-        Route::put('/staff/{staff}/reset-password', [AdminStaffController::class, 'reset-password'])
-            ->name('staff.reset-password');
+        Route::get('/staff', [AdminStaffController::class, 'index'])->name('staff.index');
+        Route::get('/staff/create', [AdminStaffController::class, 'create'])->name('staff.create');
+        Route::post('/staff', [AdminStaffController::class, 'store'])->name('staff.store');
+        Route::get('/staff/{staff}/edit', [AdminStaffController::class, 'edit'])->name('staff.edit');
+        Route::put('/staff/{staff}', [AdminStaffController::class, 'update'])->name('staff.update');
+        Route::put('/staff/{staff}/reset-password', [AdminStaffController::class, 'reset-password'])->name('staff.reset-password');
     });
+    
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 Route::get('/account/general', [AccountController::class, 'show'])->middleware('auth')->name('user.account.general');
@@ -179,32 +154,3 @@ Route::put('/account/password', [AccountController::class, 'resetPassword'])->mi
 Route::get('/account/tickets', [TicketController::class, 'index'])->name('user.account.tickets');
 Route::get('/account/tickets/{id}', [TicketController::class, 'show'])->name('user.account.tickets.show');
 Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movie.show');
-// ---Post routes---
-Route::get('/movies/{movie}/booking', [TicketController::class, 'booking'])->name('ticket.booking')->middleware('auth');
-
-Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(function () {
-    Route::get('/bookings', [StaffController::class, 'bookings'])->name('bookings');
-    Route::get('/tickets', [StaffController::class, 'tickets'])->name('tickets');
-    Route::get('/tickets/{ticket}', [StaffController::class, 'show'])->name('tickets.show');
-    Route::post('/tickets/{ticket}/status', [StaffController::class, 'updateStatus'])->name('tickets.updateStatus');
-});
-
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminMovieController::class, 'home'])->name('dashboard');
-    Route::get('/movies', [AdminMovieController::class, 'index'])->name('movies.index');
-    Route::get('/movies/create', [AdminMovieController::class, 'create'])->name('movies.create');
-    Route::post('/movies', [AdminMovieController::class, 'store'])->name('movies.store');
-    Route::get('/movies/{movie}', [AdminMovieController::class, 'show'])->name('movies.show');
-    Route::get('/movies/{movie}/edit', [AdminMovieController::class, 'edit'])->name('movies.edit');
-    Route::put('/movies/{movie}', [AdminMovieController::class, 'update'])->name('movies.update');
-    Route::delete('/movies/{movie}', [AdminMovieController::class, 'destroy'])->name('movies.destroy');
-    Route::view('/showtimes', 'admin.showtimes.index')->name('showtimes.index');
-    Route::view('/rooms', 'admin.rooms.index')->name('rooms.index');
-
-    Route::get('/staff', [AdminStaffController::class, 'index'])->name('staff.index');
-    Route::get('/staff/create', [AdminStaffController::class, 'create'])->name('staff.create');
-    Route::post('/staff', [AdminStaffController::class, 'store'])->name('staff.store');
-    Route::get('/staff/{staff}/edit', [AdminStaffController::class, 'edit'])->name('staff.edit');
-    Route::put('/staff/{staff}', [AdminStaffController::class, 'update'])->name('staff.update');
-    Route::put('/staff/{staff}/reset-password', [AdminStaffController::class, 'resetPassword'])->name('staff.reset-password');
-});
