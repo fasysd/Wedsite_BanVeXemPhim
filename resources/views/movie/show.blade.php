@@ -28,9 +28,9 @@
         <div class="info-item mt-4">
             {{ $movie->description }}
         </div>
-        <button class="btn-book" id="bookBtn">
-            Đặt vé
-        </button>
+            <button class="btn-book" id="bookBtn">
+                Đặt vé
+            </button>
     </div>
 </div>
 <div class="container-fluid movie-index-page text-dark p-0">
@@ -40,12 +40,12 @@
 </div>
 <script>
 document.getElementById('bookBtn').addEventListener('click', () => {
-    @guest
-        window.location.href = "{{ route('login') }}";
-    @endguest
-    @auth
-        window.location.href = "{{ route('ticket.booking', ['movie' => $movie->id]) }}";
-    @endauth
+        @guest
+            window.location.href = "{{ route('login') }}";
+        @endguest
+        @auth
+                window.location.href = "{{ route('ticket.booking', ['movie' => $movie->id]) }}";
+        @endauth
     // fetch('/movies/{{ $movie->id }}/purchase', {
     //     method: 'POST',
     //     headers: {

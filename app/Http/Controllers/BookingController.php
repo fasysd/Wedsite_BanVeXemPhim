@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
+    
     public function getExpireTime(int $id)
     {
     //     return Booking::where('id', $id)

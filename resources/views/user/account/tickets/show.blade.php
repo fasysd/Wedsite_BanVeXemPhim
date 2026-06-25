@@ -20,7 +20,7 @@
                         Thông tin chung
                     </a>
 
-                    <a href="{{ route('user.account.detail') }} " class="list-group-item account-menu">
+                    <a href="{{ route('user.account.detail') }}" class="list-group-item account-menu">
                         Thông tin chi tiết
                     </a>
 
@@ -41,11 +41,103 @@
                         CHI TIẾT VÉ
                     </div>
 
-                    <div class="ticket-table-wrapper">
-                        <p><strong>Mã vé:</strong> {{ $ticket->booking_id }}</p>
-                        <p><strong>Ghế:</strong> {{ $ticket->seat_id }}</p>
-                        <p><strong>Giá:</strong> {{ number_format($ticket->final_price, 0, ',', '.') }}đ</p>
-                        <p><strong>Trạng thái:</strong> {{ $ticket->status }}</p>
+                    {{-- TICKET CARD --}}
+                    <div class="ticket-card">
+
+                        {{-- HEADER --}}
+                        <div class="ticket-header">
+                            <div>
+                                <h4 class="mb-1">
+                                    {{ $ticket->showtime->movie->title ?? 'N/A' }}
+                                </h4>
+                                <small>
+                                    Booking #{{ $ticket->booking->id }} • Ticket #{{ $ticket->id }}
+                                </small>
+                            </div>
+
+                            <div>
+                                @php
+                                    $status = $ticket->booking->status;
+
+                                    $statusClass = match($status) {
+                                        'PENDING' => 'badge-warning',
+                                        'PAID' => 'badge-success',
+                                        'CANCELLED' => 'badge-danger',
+                                        'EXPIRED' => 'badge-secondary',
+                                        default => 'badge-dark'
+                                    };
+                                @endphp
+
+                                <span class="badge {{ $statusClass }}">
+                                    {{ $status }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        {{-- BODY INFO --}}
+                        <div class="ticket-body">
+
+                            <p><strong>Suất chiếu:</strong> {{ $ticket->showtime->start_time }}</p>
+                            <p><strong>Phòng:</strong> {{ $ticket->showtime->room_id }}</p>
+
+                            <p><strong>Ghế:</strong>
+                                {{ $ticket->seat->seat_row }}{{ $ticket->seat->seat_number }}
+                            </p>
+
+                            <p><strong>Giá:</strong>
+                                {{ number_format($ticket->final_price, 0, ',', '.') }}đ
+                            </p>
+
+                            {{-- Countdown --}}
+                            @if($ticket->booking->status === 'PENDING')
+                                <div class="countdown-box">
+                                    <strong>Thời gian giữ vé:</strong>
+                                    <span id="countdown"></span>
+                                </div>
+
+                                <script>
+                                    const expireAt = {{ $ticket->booking->expire_at * 1000 }};
+
+                                    function updateCountdown() {
+                                        const now = new Date().getTime();
+                                        const distance = expireAt - now;
+
+                                        if (distance <= 0) {
+                                            document.getElementById("countdown").innerHTML = "Hết hạn";
+                                            return;
+                                        }
+
+                                        const minutes = Math.floor(distance / 60000);
+                                        const seconds = Math.floor((distance % 60000) / 1000);
+
+                                        document.getElementById("countdown").innerHTML =
+                                            minutes + "m " + seconds + "s";
+                                    }
+
+                                    updateCountdown();
+                                    setInterval(updateCountdown, 1000);
+                                </script>
+                            @endif
+
+                        </div>
+
+                        {{-- FOOTER ACTION --}}
+                        <div class="ticket-footer">
+
+                            @if($ticket->booking->status === 'PENDING')
+                                {{-- <form method="POST" action="{{ route('ticket.pay', $ticket->booking->id) }}"> --}}
+                                    <form>
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger btn-lg">
+                                        Thanh toán ngay
+                                    </button>
+                                </form>
+                            @endif
+
+                        </div>
+
                     </div>
 
                 </div>

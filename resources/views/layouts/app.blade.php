@@ -8,16 +8,18 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/user/index.css') }}">
     <link rel="stylesheet" href="{{ asset('css/page/movie.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/page/ticket.css') }}">
     <link rel="stylesheet" href="{{ asset('css/page/booking.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/page/seat.css') }}">
     <link rel="stylesheet" href="{{ asset('css/user/account.css') }}">
     <link rel="stylesheet" href="{{ asset('css/user/about.css') }}">
 </head>
 <body>
-    @php
+    {{-- @php
         use Illuminate\Support\Facades\Auth;
         use App\Models\User;
         Auth::login(User::first()); // Automatically log in the first user for testing purposes
-    @endphp
+    @endphp --}}
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <a class="logo" href="{{ route('movies') }}">
@@ -95,6 +97,15 @@
     @yield('content')
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
+    @if(session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (confirm(@json(session('error')))) {
+                    // window.location.href = "{{ route('movies') }}";
+                }
+            });
+        </script>
+@endif
 </body>
+
 </html>
