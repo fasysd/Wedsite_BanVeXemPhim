@@ -2,9 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AdminMovieController;
 use App\Http\Controllers\AdminStaffController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\TicketController;
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -26,13 +28,20 @@ Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movie.show')
 Route::get('/movies/{movie}/booking', [TicketController::class, 'booking'])->name('ticket.booking')->middleware('auth');
 
 Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(function () {
-    Route::view('/bookings', 'staff.bookings')->name('bookings');
-    Route::view('/tickets', 'staff.tickets')->name('tickets');
+    Route::get('/bookings', [StaffController::class, 'bookings'])->name('bookings');
+    Route::get('/tickets', [StaffController::class, 'tickets'])->name('tickets');
+    Route::get('/tickets/{ticket}', [StaffController::class, 'show'])->name('tickets.show');
+    Route::post('/tickets/{ticket}/status', [StaffController::class, 'updateStatus'])->name('tickets.updateStatus');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::redirect('/', '/admin/movies')->name('dashboard');
-    Route::view('/movies', 'admin.movies.index')->name('movies.index');
+    Route::get('/movies', [AdminMovieController::class, 'index'])->name('movies.index');
+    Route::get('/movies/create', [AdminMovieController::class, 'create'])->name('movies.create');
+    Route::post('/movies', [AdminMovieController::class, 'store'])->name('movies.store');
+    Route::get('/movies/{movie}/edit', [AdminMovieController::class, 'edit'])->name('movies.edit');
+    Route::put('/movies/{movie}', [AdminMovieController::class, 'update'])->name('movies.update');
+    Route::delete('/movies/{movie}', [AdminMovieController::class, 'destroy'])->name('movies.destroy');
     Route::view('/showtimes', 'admin.showtimes.index')->name('showtimes.index');
     Route::view('/rooms', 'admin.rooms.index')->name('rooms.index');
 
