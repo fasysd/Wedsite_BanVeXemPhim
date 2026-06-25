@@ -43,3 +43,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/staff/{staff}', [AdminStaffController::class, 'update'])->name('staff.update');
     Route::put('/staff/{staff}/reset-password', [AdminStaffController::class, 'resetPassword'])->name('staff.reset-password');
 });
+Route::get('/welcome', function () {
+    return view('welcome');
+});
+
+Route::view('/admin', 'admin')->name('admin.dashboard');
+Route::view('/admin/movies', 'admin.movies.index')->name('admin.movies.index');
+Route::view('/admin/showtimes', 'admin.showtimes.index')->name('admin.showtimes.index');
+Route::view('/admin/rooms', 'admin.rooms.index')->name('admin.rooms.index');
+
+Route::redirect('/staff', '/staff/bookings');
+Route::view('/staff/bookings', 'staff.bookings')->name('staff.bookings');
+Route::view('/staff/tickets', 'staff.tickets')->name('staff.tickets');
