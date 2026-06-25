@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -14,6 +15,7 @@
     <link rel="stylesheet" href="{{ asset('css/user/account.css') }}">
     <link rel="stylesheet" href="{{ asset('css/user/about.css') }}">
 </head>
+
 <body>
     {{-- @php
         use Illuminate\Support\Facades\Auth;
@@ -30,53 +32,68 @@
                 <a href="{{ route('movies') }}" class="nav-link-custom">Phim</a>
                 <a href="{{ route('user.help.about') }}" class="nav-link-custom">Rạp</a>
                 @auth
-                    <a href="{{ route('user.account.tickets') }}" class="nav-link-custom">Vé của tôi</a>
+                    @if(Auth::user()->role === 'ADMIN')
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link-custom">Quản trị</a>
+                    @else
+                        <a href="{{ route('user.account.tickets') }}" class="nav-link-custom">Vé của tôi</a>
+                    @endif
                 @endauth
                 @guest
                     <a href="{{ route('login') }}" class="nav-link-custom">Vé của tôi</a>
                 @endguest
             </div>
             <div class="mx-auto">
-                <input
-                    type="text"
-                    class="search-box"
-                    placeholder="Tìm kiếm phim,tác giả ..."
-                >
+                <input type="text" class="search-box" placeholder="Tìm kiếm phim,tác giả ...">
             </div>
 
             <div class="d-flex align-items-center">
                 @auth
                 <div class="dropdown">
-                    <a
-                        class="nav-link-custom dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                        href="#">
+                    <a class="nav-link-custom dropdown-toggle" data-bs-toggle="dropdown" href="#">
                         {{ Auth::user()->full_name }}
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-end">
+                        @if(Auth::user()->role === 'ADMIN')
+                            <li>
+                                <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                    Trang quản trị
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('admin.staff.index') }}">
+                                    Quản lý nhân viên
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                        @else
+                            <li>
+                                <a class="dropdown-item" href="{{ route('user.account.general') }}">
+                                    Tài khoản
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item" href="{{ route('user.account.tickets') }}">
+                                    Vé của tôi
+                                </a>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                        @endif
 
                         <li>
-                            <a class="dropdown-item"
-                            href="{{ route('user.account.general') }}">
-                                Tài khoản
-                            </a>
-                        </li>
 
-                        <li>
-                            <a class="dropdown-item"
-                            href="{{ route('user.account.tickets') }}">
-                                Vé của tôi
-                            </a>
-                        </li>
-
-                        <li><hr class="dropdown-divider"></li>
-
-                        <li>
-                           
-                                <button>
-                                    Đăng xuất                                 
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item">
+                                    Đăng xuất
                                 </button>
+                            </form>
 
                         </li>
 
@@ -86,8 +103,8 @@
 
                 @endauth
                 @guest
-                    <a href="{{ route('login') }}" class="nav-link-custom">Đăng nhập</a>
-                    <a href="{{ route('register') }}" class="nav-link-custom">Đăng ký</a>
+                <a href="{{ route('login') }}" class="nav-link-custom">Đăng nhập</a>
+                <a href="{{ route('register') }}" class="nav-link-custom">Đăng ký</a>
                 @endguest
             </div>
 

@@ -99,16 +99,17 @@
       <nav class="nav flex-column">
         <a class="nav-link active" href="{{ route('staff.bookings') }}">Danh sách đặt vé</a>
         <a class="nav-link" href="{{ route('staff.tickets') }}">Tra cứu vé</a>
+        <a class="nav-link" href="{{ route('user.account.general') }}">Thông tin tài khoản</a>
+        <form method="POST" action="{{ route('logout') }}" class="mt-2">
+          @csrf
+          <button type="submit" class="btn btn-outline-danger btn-sm w-100 text-start">Đăng xuất</button>
+        </form>
       </nav>
     </aside>
     <main class="col-lg-10 p-4">
       <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
         <div>
           <h4 class="mb-1">Danh sách đặt vé</h4>
-        </div>
-        <div class="d-flex gap-2">
-          <button type="button" class="btn btn-outline-light btn-sm" disabled>Đăng nhập</button>
-          <button type="button" class="btn btn-outline-light btn-sm" disabled>Đăng xuất</button>
         </div>
       </div>
       <div class="table-responsive rounded-4 shadow-sm mb-4">
@@ -124,59 +125,24 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>VE-2026-001</td>
-              <td>Nguyễn A</td>
-              <td>Rạp 3</td>
-              <td>B5</td>
-              <td>Đã xác nhận</td>
-              <td><button class="btn btn-sm btn-outline-primary" disabled>Cập nhật</button></td>
-            </tr>
-            <tr>
-              <td>VE-2026-002</td>
-              <td>Trần B</td>
-              <td>Rạp 1</td>
-              <td>C9</td>
-              <td>Đang chờ</td>
-              <td><button class="btn btn-sm btn-outline-primary" disabled>Cập nhật</button></td>
-            </tr>
-            <tr>
-              <td>VE-2026-003</td>
-              <td>Phạm C</td>
-              <td>Rạp 2</td>
-              <td>A2</td>
-              <td>Đã sử dụng</td>
-              <td><button class="btn btn-sm btn-outline-primary" disabled>Cập nhật</button></td>
-            </tr>
+            @forelse($tickets as $ticket)
+              <tr>
+                <td>{{ $ticket->id }}</td>
+                <td>{{ $ticket->booking?->user->full_name ?? $ticket->booking?->user->username ?? 'Khách ẩn danh' }}</td>
+                <td>{{ $ticket->showtime?->room?->name ?? 'Chưa rõ' }}</td>
+                <td>{{ $ticket->seat?->label ?? 'Chưa rõ' }}</td>
+                <td>{{ $ticket->status }}</td>
+                <td>
+                  <a href="{{ route('staff.tickets.show', $ticket) }}" class="btn btn-sm btn-outline-primary">Cập nhật</a>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="6" class="text-center py-4">Không có vé nào.</td>
+              </tr>
+            @endforelse
           </tbody>
         </table>
-      </div>
-      <div class="row g-4">
-        <div class="col-lg-6">
-          <div class="section-card card p-4">
-            <h5 class="mb-3">Tìm vé cần xử lý</h5>
-            <div class="mb-3">
-              <label class="form-label small text-muted">Mã vé</label>
-              <input type="text" class="form-control form-control-sm" placeholder="VE-2026-001" disabled>
-            </div>
-            <button class="btn btn-primary btn-sm" disabled>Tìm vé</button>
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="section-card card p-4">
-            <h5 class="mb-3">Trạng thái mới</h5>
-            <div class="mb-3">
-              <label class="form-label small text-muted">Chọn trạng thái</label>
-              <select class="form-select form-select-sm" disabled>
-                <option selected>Đã xác nhận</option>
-                <option>Đã sử dụng</option>
-                <option>Hủy vé</option>
-                <option>Đang chờ</option>
-              </select>
-            </div>
-            <button class="btn btn-outline-light btn-sm" disabled>Cập nhật trạng thái</button>
-          </div>
-        </div>
       </div>
     </main>
   </div>

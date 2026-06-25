@@ -35,19 +35,35 @@
                     </div>
                 </div>
                 <nav class="nav flex-column">
+                    <a class="nav-link" href="{{ route('admin.dashboard') }}">Trang chủ</a>
                     <a class="nav-link" href="{{ route('admin.movies.index') }}">Quản lý phim</a>
                     <a class="nav-link" href="{{ route('admin.showtimes.index') }}">Quản lý lịch chiếu</a>
                     <a class="nav-link active" href="{{ route('admin.rooms.index') }}">Quản lý phòng chiếu</a>
+                    <a class="nav-link" href="{{ route('admin.staff.index') }}">Quản lý nhân viên</a>
+                    <a class="nav-link" href="{{ route('user.account.general') }}">Xem thông tin</a>
+                    <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-danger btn-sm w-100 text-start">Đăng xuất</button>
+                    </form>
                 </nav>
             </aside>
             <main class="col-lg-10 p-4">
                 <div class="d-flex justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                     <div>
                         <h4 class="mb-1">Quản lý phòng chiếu</h4>
-                        <p class="text-muted mb-0">Tạo phòng, thiết lập tổng số ghế và đánh dấu ghế VIP.</p>
                     </div>
-                    <button type="button" class="btn btn-success" disabled>Thêm phòng mới</button>
+                    <a href="{{ route('admin.rooms.create') }}" class="btn btn-success">Thêm phòng mới</a>
                 </div>
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if($errors->has('general'))
+                    <div class="alert alert-danger">
+                        {{ $errors->first('general') }}
+                    </div>
+                @endif
                 <div class="table-responsive rounded-4">
                     <table class="table table-borderless align-middle mb-0">
                         <thead>
@@ -55,31 +71,51 @@
                                 <th style="width:60px">ID</th>
                                 <th>Tên phòng</th>
                                 <th>Tổng ghế</th>
-                                <th>Ghế VIP</th>
                                 <th class="text-end">Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="small text-muted">A1</td>
-                                <td>Phòng A</td>
-                                <td>120</td>
-                                <td>12</td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-outline-primary me-1" disabled>Sửa</button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" disabled>Xóa</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="small text-muted">B1</td>
-                                <td>Phòng B</td>
-                                <td>80</td>
-                                <td>8</td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-outline-primary me-1" disabled>Sửa</button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" disabled>Xóa</button>
-                                </td>
-                            </tr>
+                            @forelse($rooms as $room)
+                                <tr>
+                                    <td class="small text-muted">{{ $room->id }}</td>
+                                    <td>{{ $room->name }}</td>
+                                    <td>{{ $room->total_seats }}</td>
+                                    <td class="text-end">
+                                        <a href="{{ route('admin.rooms.show', $room->id) }}"
+                                        class="btn btn-sm btn-outline-info me-1">
+                                            Xem
+                                        </a>
+
+                                        <a href="{{ route('admin.rooms.edit', $room->id) }}"
+                                        class="btn btn-sm btn-outline-primary me-1">
+                                            Sửa
+                                        </a>
+
+                                        <form
+                                            action="{{ route('admin.rooms.destroy', $room->id) }}"
+                                            method="POST"
+                                            class="d-inline">
+
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Bạn có chắc muốn xóa phòng này?')">
+                                                Xóa
+                                            </button>
+
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        Chưa có phòng chiếu nào
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

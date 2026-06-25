@@ -22,6 +22,13 @@
     </style>
 </head>
 <body>
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            @foreach ($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
     <div class="container-fluid">
         <div class="row">
             <aside class="col-lg-2 sidebar p-3">
@@ -35,18 +42,24 @@
                     </div>
                 </div>
                 <nav class="nav flex-column">
+                    <a class="nav-link" href="{{ route('admin.dashboard') }}">Trang chủ</a>
                     <a class="nav-link" href="{{ route('admin.movies.index') }}">Quản lý phim</a>
                     <a class="nav-link active" href="{{ route('admin.showtimes.index') }}">Quản lý lịch chiếu</a>
                     <a class="nav-link" href="{{ route('admin.rooms.index') }}">Quản lý phòng chiếu</a>
+                    <a class="nav-link" href="{{ route('admin.staff.index') }}">Quản lý nhân viên</a>
+                    <a class="nav-link" href="{{ route('user.account.general') }}">Xem thông tin</a>
+                    <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-danger btn-sm w-100 text-start">Đăng xuất</button>
+                    </form>
                 </nav>
             </aside>
             <main class="col-lg-10 p-4">
                 <div class="d-flex justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                     <div>
                         <h4 class="mb-1">Quản lý lịch chiếu</h4>
-                        <p class="text-muted mb-0">Giao diện demo chỉ hiển thị bảng lịch chiếu. Mọi thao tác hiện tại không hoạt động.</p>
                     </div>
-                    <button type="button" class="btn btn-success">Thêm lịch chiếu mới</button>
+                    <a href="{{ route('admin.showtimes.create') }}" class="btn btn-success">Thêm lịch chiếu mới</a>
                 </div>
                 <div class="table-responsive rounded-4">
                     <table class="table table-borderless align-middle mb-0">
@@ -62,30 +75,64 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="small text-muted">1</td>
-                                <td>Cuộc chiến rạp chiếu</td>
-                                <td>Phòng A</td>
-                                <td>15:00 15/06/2026</td>
-                                <td>17:00 15/06/2026</td>
-                                <td>120.000 đ</td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-outline-primary me-1" disabled>Sửa</button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" disabled>Xóa</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="small text-muted">2</td>
-                                <td>Thiên nhiên đen tối</td>
-                                <td>Phòng B</td>
-                                <td>18:30 16/06/2026</td>
-                                <td>20:10 16/06/2026</td>
-                                <td>100.000 đ</td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-outline-primary me-1" disabled>Sửa</button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" disabled>Xóa</button>
-                                </td>
-                            </tr>
+                            @forelse($showtimes as $showtime)
+                                <tr>
+                                    <td class="small text-muted">
+                                        {{ $showtime->id }}
+                                    </td>
+
+                                    <td>
+                                        {{ $showtime->movie->title ?? 'Không có phim' }}
+                                    </td>
+
+                                    <td>
+                                        {{ $showtime->room->name ?? 'Không có phòng' }}
+                                    </td>
+
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($showtime->start_time)->format('H:i d/m/Y') }}
+                                    </td>
+
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($showtime->end_time)->format('H:i d/m/Y') }}
+                                    </td>
+
+                                    <td>
+                                        {{ number_format($showtime->price_standard, 0, ',', '.') }} đ
+                                    </td>
+
+                                    <td class="text-end">
+                                        <a href="{{ route('admin.showtimes.show', $showtime->id) }}"
+                                        class="btn btn-sm btn-outline-info me-1">
+                                            Xem
+                                        </a>
+
+                                        <a href="{{ route('admin.showtimes.edit', $showtime->id) }}"
+                                        class="btn btn-sm btn-outline-primary me-1">
+                                            Sửa
+                                        </a>
+
+                                        <form action="{{ route('admin.showtimes.destroy', $showtime->id) }}"
+                                            method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('Bạn có chắc muốn xóa lịch chiếu này?')">
+                                                Xóa
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        Chưa có lịch chiếu nào
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
