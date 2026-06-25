@@ -6,6 +6,13 @@
 
 <div class="container mt-5">
 
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
     <h2 class="text-center text-white mb-4">
         XÁC NHẬN ĐẶT VÉ
     </h2>

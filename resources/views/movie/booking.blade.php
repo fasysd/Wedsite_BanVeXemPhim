@@ -182,9 +182,16 @@
             <div>
                 <form action="{{ route('ticket.purchase', $movie->id) }}" method="POST" id="bookingForm">
                     @csrf
+
                     <input type="hidden" name="showtime_id" value="{{ $selectedShowtime->id }}">
                     <input type="hidden" name="seat_ids" id="seat_ids">
-                    <button type="submit" class="btn btn-danger">
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                        id="continueBtn"
+                        style="display:none;"
+                    >
                         Tiếp tục >
                     </button>
                 </form>
@@ -197,9 +204,22 @@
 </div>
 <script>
     const form = document.getElementById('bookingForm');
+    const continueBtn = document.getElementById('continueBtn');
+
+    function updateContinueButton() {
+        if (selectedSeatIds.length > 0) {
+            continueBtn.style.display = 'inline-block';
+        } else {
+            continueBtn.style.display = 'none';
+        }
+    }
+
     form.addEventListener('submit', function () {
         document.getElementById('seat_ids').value =
             selectedSeatIds.join(',');
     });
+
+    // Gọi lần đầu
+    updateContinueButton();
 </script>
 @endsection

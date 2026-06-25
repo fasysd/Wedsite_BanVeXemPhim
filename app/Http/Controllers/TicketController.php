@@ -41,83 +41,95 @@ class TicketController extends Controller
 
         if ($showtimes->isEmpty()) {
             return redirect()->route('movie.show', $movie->id)
-                ->with('error', 'Phim chưa có suất chiếu. Vui lòng chọn phim khác hoặc kiểm tra sau.');
+                ->with('error', 'Phim chưa có suất chiếu.');
         }
 
-        $selectedShowtimeId = $request->query('showtime');
-
-        if (empty($selectedShowtimeId)) {
-            $selectedShowtimeId = $showtimes->first()->id;
-        }
+        $selectedShowtimeId = $request->query('showtime')
+            ?? $showtimes->first()->id;
 
         $selectedShowtime = $showtimes->firstWhere('id', $selectedShowtimeId);
 
         if (!$selectedShowtime) {
             abort(404, 'Suất chiếu không tồn tại');
         }
+
         $seats = Seat::where('room_id', $selectedShowtime->room_id)
             ->orderBy('seat_row')
             ->orderBy('seat_number')
             ->get();
 
-        Log::info('Showtime: ' . $selectedShowtime->id);
-        Log::info('Room: ' . $selectedShowtime->room_id);
-        Log::info('Seats: ' . $seats->count());
+        // Lấy các ghế đã có vé của suất chiếu này
+        $tickets = TicketDetail::where('showtime_id', $selectedShowtime->id)
+            ->get(['seat_id', 'status']);
+
+        $holdingSeatIds = $tickets
+            ->where('status', 'HOLDING')
+            ->pluck('seat_id')
+            ->toArray();
+
+        $bookedSeatIds = $tickets
+            ->where('status', 'BOOKED')
+            ->pluck('seat_id')
+            ->toArray();
 
         return view('movie.booking', [
             'movie' => $movie,
             'showtimes' => $showtimes,
             'selectedShowtime' => $selectedShowtime,
-            'seats' => $seats
+            'seats' => $seats,
+            'holdingSeatIds' => $holdingSeatIds,
+            'bookedSeatIds' => $bookedSeatIds,
         ]);
     }
     /**
      * Store a newly created resource in storage.
      */
-public function store(Request $request, Movie $movie)
-{
+    public function store(Request $request, Movie $movie)
+    {
+        $request->validate([
+            'showtime_id' => 'required|exists:showtimes,id',
+            'seat_ids' => 'required|array|min:1',
+        ], [
+            'seat_ids.required' => 'Vui lòng chọn ít nhất một ghế.',
+        ]);
 
-    DB::transaction(function () use ($request) {
-
-        $seatIds = $request->input('seat_ids');
+        $seatIds = $request->seat_ids;
 
         $showtime = Showtime::findOrFail($request->showtime_id);
 
+        $exists = TicketDetail::where('showtime_id', $showtime->id)
+            ->whereIn('seat_id', $seatIds)
+            ->whereIn('status', ['HOLDING', 'BOOKED'])
+            ->exists();
 
-        $booking = Booking::create([
-
-            'user_id' => Auth::id(),
-
-            'total_price' => count($seatIds) * $showtime->price_standard,
-
-            'status' => 'PENDING',
-
-            'expired_at' => now()->addMinutes(10)
-
-        ]);
-        foreach($seatIds as $seatId){
-
-            TicketDetail::create([
-
-                'booking_id' => $booking->id,
-
-                'showtime_id' => $showtime->id,
-
-                'seat_id' => $seatId,
-
-                'final_price' => $showtime->price_standard,
-
-                'status' => 'HOLDING'
-
-            ]);
-
+        if ($exists) {
+            return redirect()
+                ->route('ticket.booking', $movie->id)
+                ->with('error', 'Ghế đã được người khác đặt.');
         }
 
+        DB::transaction(function () use ($seatIds, $showtime) {
 
-    });
-     return redirect()
-    ->route('ticket.result');
-}
+            $booking = Booking::create([
+                'user_id' => Auth::id(),
+                'total_price' => count($seatIds) * $showtime->price_standard,
+                'status' => 'PENDING',
+                'expired_at' => now()->addMinutes(10),
+            ]);
+
+            foreach ($seatIds as $seatId) {
+                TicketDetail::create([
+                    'booking_id' => $booking->id,
+                    'showtime_id' => $showtime->id,
+                    'seat_id' => $seatId,
+                    'final_price' => $showtime->price_standard,
+                    'status' => 'HOLDING',
+                ]);
+            }
+        });
+
+        return redirect()->route('ticket.result');
+    }
 
     /**
      * Display the specified resource.
