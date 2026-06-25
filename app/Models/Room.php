@@ -19,8 +19,16 @@ class Room extends Model
         return $this->hasMany(Seat::class);
     }
 
+    public function getVipSeatCount()
+    {
+        return $this->seats()
+            ->where('type', 'VIP')
+            ->count();
+    }
+
     public function showtimes()
     {
         return $this->hasMany(Showtime::class);
     }
+
 }

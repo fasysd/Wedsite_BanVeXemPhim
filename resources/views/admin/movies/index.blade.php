@@ -57,7 +57,7 @@
                         <div class="d-flex gap-2">
                             <input id="movieSearch" type="search" class="form-control form-control-sm" placeholder="Tìm theo tên phim..." style="min-width:320px;" disabled>
                             <button type="button" class="btn btn-outline-light btn-sm" disabled>Tìm</button>
-                            <button type="button" class="btn btn-success btn-sm" disabled>Thêm phim mới</button>
+                            <a href="{{ route('admin.movies.create') }}" class="btn btn-success btn-sm">Thêm phim mới</a>
                         </div>
                     </div>
                     <div class="row g-3 mb-4">
