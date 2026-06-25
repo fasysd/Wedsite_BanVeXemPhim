@@ -142,6 +142,12 @@ class AdminMovieController extends Controller
 
     public function destroy(Movie $movie)
     {
+        if ($movie->showtimes()->exists()) {
+            return redirect()
+                ->route('admin.movies.index')
+                ->with('error', 'Không thể xóa phim vì vẫn còn suất chiếu liên quan.');
+        }
+
         $movie->delete();
 
         return redirect()
