@@ -69,26 +69,22 @@
                     <div class="mb-3">
                         <small class="text-muted">Gõ ký tự để hiển thị phim bắt đầu bằng chữ đó.</small>
                     </div>
-                    </div>
+
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+                    @if(session('error'))
+                        <div class="alert alert-danger">{{ session('error') }}</div>
+                    @endif
+
                     <div class="row g-3 mb-4">
                         <div class="col-md-4">
                             <div class="content-card p-3 h-100">
                                 <small class="text-muted">Tổng phim</small>
-                                <h3 class="mb-0">12</h3>
+                                <h3 class="mb-0">{{ $movies->count() }}</h3>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="content-card p-3 h-100">
-                                <small class="text-muted">Tổng lịch chiếu</small>
-                                <h3 class="mb-0">24</h3>
-                            </div>
-                        </div>
-                        <div class="col-md-4 d-none d-md-block">
-                            <div class="content-card p-3 h-100">
-                                <small class="text-muted">Phiên bản</small>
-                                <h3 class="mb-0">1.0</h3>
-                            </div>
-                        </div>
+                      
                     </div>
                     <div class="table-responsive rounded-4 shadow-sm">
                         <table class="table table-hover align-middle mb-0">
@@ -125,10 +121,10 @@
                                         <td>{{ $movie->duration ? $movie->duration . ' phút' : '-' }}</td>
                                         <td class="text-end">
                                             <button type="button" data-edit-url="{{ route('admin.movies.edit', $movie) }}?modal=1" class="btn btn-sm btn-outline-primary me-1 editMovieBtn">Sửa</button>
-                                            <form action="{{ route('admin.movies.destroy', $movie) }}" method="POST" style="display:inline" onsubmit="return confirm('Bạn chắc chắn muốn xóa phim này?');">
+                                            <form action="{{ route('admin.movies.destroy', $movie) }}" method="POST" style="display:inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger deleteMovieBtn" data-movie-title="{{ $movie->title }}">Xóa</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -156,6 +152,24 @@
                     <div class="text-center py-5 text-muted">
                         Đang tải...
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa phim</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="deleteConfirmText" class="text-white"></p>
+                </div>
+                <div class="modal-footer border-top border-secondary-subtle">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Xóa</button>
                 </div>
             </div>
         </div>
@@ -215,6 +229,29 @@
                 event.stopPropagation();
                 loadMovieForm(button.dataset.editUrl, 'Sửa phim');
             });
+        });
+
+        const deleteConfirmModalEl = document.getElementById('deleteConfirmModal');
+        const deleteConfirmModal = new bootstrap.Modal(deleteConfirmModalEl);
+        const deleteConfirmText = document.getElementById('deleteConfirmText');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        let deleteForm = null;
+
+        document.querySelectorAll('.deleteMovieBtn').forEach(button => {
+            button.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                deleteForm = button.closest('form');
+                const title = button.dataset.movieTitle || 'bộ phim này';
+                deleteConfirmText.textContent = `Bạn có chắc muốn xóa phim "${title}" không?`;
+                deleteConfirmModal.show();
+            });
+        });
+
+        confirmDeleteBtn.addEventListener('click', () => {
+            if (deleteForm) {
+                deleteForm.submit();
+            }
         });
     </script>
 </body>

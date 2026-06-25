@@ -39,7 +39,12 @@ class AdminMovieController extends Controller
 
     public function index(Request $request)
     {
+        $now = now();
+
         $movies = Movie::withCount('showtimes')
+            ->withCount(['showtimes as active_or_upcoming_showtimes' => function ($query) use ($now) {
+                $query->where('end_time', '>=', $now);
+            }])
             ->when($request->query('q'), function ($query, $q) {
                 return $query->where('title', 'like', "{$q}%");
             })
@@ -84,9 +89,9 @@ class AdminMovieController extends Controller
         $validated = $request->validate([
             'id' => ['nullable', 'integer', 'min:1', 'unique:movies,id'],
             'title' => ['required', 'string', 'max:255'],
-            'genre' => ['nullable', 'string', 'max:255'],
-            'release_date' => ['nullable', 'date'],
-            'image_path' => ['nullable', 'string', 'max:255'],
+            'genre' => ['required', 'string', 'max:255'],
+            'release_date' => ['required', 'date'],
+            'image_path' => ['required', 'string', 'max:255'],
             'duration' => ['required', 'integer', 'min:1'],
             'description' => ['nullable', 'string'],
         ]);
@@ -125,9 +130,9 @@ class AdminMovieController extends Controller
         $validated = $request->validate([
             'id' => ['nullable', 'integer', 'min:1', Rule::unique('movies', 'id')->ignore($movie->id)],
             'title' => ['required', 'string', 'max:255'],
-            'genre' => ['nullable', 'string', 'max:255'],
-            'release_date' => ['nullable', 'date'],
-            'image_path' => ['nullable', 'string', 'max:255'],
+            'genre' => ['required', 'string', 'max:255'],
+            'release_date' => ['required', 'date'],
+            'image_path' => ['required', 'string', 'max:255'],
             'duration' => ['required', 'integer', 'min:1'],
             'description' => ['nullable', 'string'],
         ]);
@@ -142,6 +147,16 @@ class AdminMovieController extends Controller
 
     public function destroy(Movie $movie)
     {
+        $now = now();
+        $isProtected = $movie->showtimes()->where('end_time', '>=', $now)->exists()
+            || ($movie->release_date && !$movie->release_date->isPast());
+
+        if ($isProtected) {
+            return redirect()
+                ->route('admin.movies.index')
+                ->with('error', 'Không thể xóa phim đang chiếu hoặc sắp chiếu.');
+        }
+
         $movie->delete();
 
         return redirect()
