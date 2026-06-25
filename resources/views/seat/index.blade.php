@@ -15,7 +15,15 @@ $seatRows = $seats->groupBy('seat_row');
 
                 @foreach($rowSeats->sortBy('seat_number') as $seat)
 
-                   <div class="seat-box {{ $seat->type === 'VIP' ? 'seat-vip' : 'seat-standard' }}"
+                   <!-- <div class="seat-box {{ $seat->type === 'VIP' ? 'seat-vip' : 'seat-standard' }}"
+                        data-seat-id="{{ $seat->id }}">
+                        {{ $seat->seat_row }}{{ $seat->seat_number }}
+                    </div> -->
+
+                    <div class="seat-box
+                        {{ $seat->type === 'VIP' ? 'seat-vip' : 'seat-standard' }}
+                        {{ in_array($seat->id, $holdingSeatIds) ? 'seat-holding' : '' }}
+                        {{ in_array($seat->id, $bookedSeatIds) ? 'seat-booked' : '' }}"
                         data-seat-id="{{ $seat->id }}">
                         {{ $seat->seat_row }}{{ $seat->seat_number }}
                     </div>
@@ -48,12 +56,13 @@ $seatRows = $seats->groupBy('seat_row');
     <div class="seat-legend">
 
         <div class="seat-legend-item">
-        <div class="seat-legend-color seat-selected"></div>
-            <span>Đang chọn</span>
+            <div class="seat-legend-color seat-holding"></div>
+            <span>Đang giữ chỗ</span>
         </div>
+
         <div class="seat-legend-item">
             <div class="seat-legend-color seat-booked"></div>
-            <span>Đã được đặt</span>
+            <span>Đã đặt</span>
         </div>
 
     </div>
@@ -67,6 +76,13 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.seat-box').forEach(seat => {
 
         seat.addEventListener('click', function () {
+
+            if (
+                this.classList.contains('seat-holding') ||
+                this.classList.contains('seat-booked')
+            ) {
+                return;
+            }
 
             const seatId = this.dataset.seatId;
 
@@ -94,15 +110,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateBookingInfo() {
 
-        document.getElementById('selectedSeats').textContent =
-            window.selectedSeatIds.length;
+        const selectedSeatsElement =
+            document.getElementById('selectedSeats');
 
-        const total =
-            window.selectedSeatIds.length * window.ticketPrice;
+        const totalPriceElement =
+            document.getElementById('totalPrice');
 
-        document.getElementById('totalPrice').textContent =
-            total.toLocaleString('vi-VN') + ' đ';
+        if (selectedSeatsElement) {
+            selectedSeatsElement.textContent =
+                window.selectedSeatIds.length;
+        }
+
+        if (totalPriceElement) {
+            totalPriceElement.textContent =
+                (window.selectedSeatIds.length * window.ticketPrice)
+                .toLocaleString('vi-VN') + ' đ';
+        }
     }
-
 });
 </script>

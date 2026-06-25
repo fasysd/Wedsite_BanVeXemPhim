@@ -41,34 +41,44 @@ class TicketController extends Controller
 
         if ($showtimes->isEmpty()) {
             return redirect()->route('movie.show', $movie->id)
-                ->with('error', 'Phim chưa có suất chiếu. Vui lòng chọn phim khác hoặc kiểm tra sau.');
+                ->with('error', 'Phim chưa có suất chiếu.');
         }
 
-        $selectedShowtimeId = $request->query('showtime');
-
-        if (empty($selectedShowtimeId)) {
-            $selectedShowtimeId = $showtimes->first()->id;
-        }
+        $selectedShowtimeId = $request->query('showtime')
+            ?? $showtimes->first()->id;
 
         $selectedShowtime = $showtimes->firstWhere('id', $selectedShowtimeId);
 
         if (!$selectedShowtime) {
             abort(404, 'Suất chiếu không tồn tại');
         }
+
         $seats = Seat::where('room_id', $selectedShowtime->room_id)
             ->orderBy('seat_row')
             ->orderBy('seat_number')
             ->get();
 
-        Log::info('Showtime: ' . $selectedShowtime->id);
-        Log::info('Room: ' . $selectedShowtime->room_id);
-        Log::info('Seats: ' . $seats->count());
+        // Lấy các ghế đã có vé của suất chiếu này
+        $tickets = TicketDetail::where('showtime_id', $selectedShowtime->id)
+            ->get(['seat_id', 'status']);
+
+        $holdingSeatIds = $tickets
+            ->where('status', 'HOLDING')
+            ->pluck('seat_id')
+            ->toArray();
+
+        $bookedSeatIds = $tickets
+            ->where('status', 'BOOKED')
+            ->pluck('seat_id')
+            ->toArray();
 
         return view('movie.booking', [
             'movie' => $movie,
             'showtimes' => $showtimes,
             'selectedShowtime' => $selectedShowtime,
-            'seats' => $seats
+            'seats' => $seats,
+            'holdingSeatIds' => $holdingSeatIds,
+            'bookedSeatIds' => $bookedSeatIds,
         ]);
     }
     /**
