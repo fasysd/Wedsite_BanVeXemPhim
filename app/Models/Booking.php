@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     use HasFactory;
-
+    public $timestamps = false;
     protected $fillable = [
         'user_id',
         'total_price',
         'status',
-        'expire_time',
+        'expire_at',
     ];
 
     public function user()

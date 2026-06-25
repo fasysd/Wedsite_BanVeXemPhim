@@ -42,6 +42,21 @@ Route::get('/movies/{movie}/booking', [TicketController::class, 'booking'])
 Route::get('/help/about', function () {
     return view('user.help.about');
 })->name('user.help.about');
+Route::get('/register', function () {
+    return view('user.register');
+})->name('register');
+Route::get('/account/general', function () {
+    return view('user.account.general');
+})->name('user.account.general');
+Route::get('/account/tickets', [TicketController::class, 'index'])->name('user.account.tickets');
+Route::get('/account/tickets/{id}', [TicketController::class, 'show'])->name('user.account.tickets.show');
+Route::get('/account/detail', function () {
+    return view('user.account.detail');
+})->name('user.account.detail');
+Route::get('/movies/purchase_result', function () {
+    return view('movie.purchase_result');
+})->name('ticket.result');
+Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movie.show');
 
 Route::get('/welcome', function () {
     return view('home.index');
@@ -75,6 +90,12 @@ Route::middleware('auth')->group(function () {
 
 // ---Post routes---
 Route::get('/movies/{movie}/booking', [TicketController::class, 'booking'])->name('ticket.booking')->middleware('auth');
+Route::post('/movies/{movie}/purchase', [TicketController::class, 'purchase'])->name('ticket.purchase')->middleware('auth');
+Route::post('/movies/{movie}/ticket_store', 
+    [TicketController::class, 'store']
+)->name('ticket.store')->middleware('auth');
+
+
 
 /*
 |--------------------------------------------------------------------------
