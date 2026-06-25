@@ -36,7 +36,19 @@
                     <a class="nav-link" href="{{ route('admin.rooms.index') }}">Quản lý phòng chiếu</a>
                     <a class="nav-link" href="{{ route('admin.showtimes.index') }}">Quản lý lịch chiếu</a>
                     <a class="nav-link" href="{{ route('admin.movies.index') }}">Quản lý phim</a>
+                    <a class="nav-link" href="{{ route('admin.staff.index') }}">Quản lý nhân viên</a>
                 </nav>
+                <div class="mt-4 pt-4 border-top border-secondary-subtle">
+                    <div class="small text-muted mb-2">Tài khoản</div>
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('user.account.general') }}" class="btn btn-outline-light btn-sm">Xem thông tin</a>
+                        <a href="{{ route('user.account.detail') }}" class="btn btn-outline-light btn-sm">Sửa thông tin</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">Đăng xuất</button>
+                        </form>
+                    </div>
+                </div>
             </aside>
             <main class="col-lg-10 p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">

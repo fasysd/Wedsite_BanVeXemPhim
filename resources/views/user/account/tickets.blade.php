@@ -17,11 +17,7 @@
                 <div class="list-group">
 
                     <a href="{{ route('user.account.general') }}" class="list-group-item account-menu">
-                        Thông tin chung
-                    </a>
-
-                    <a href="{{ route('user.account.detail') }} " class="list-group-item account-menu">
-                        Thông tin chi tiết
+                        Thông tin tài khoản
                     </a>
 
                     <a href="{{ route('user.account.tickets') }}" class="list-group-item account-menu active">
