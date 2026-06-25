@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             updateBookingInfo();
+            updateContinueButton();
         });
 
     });
