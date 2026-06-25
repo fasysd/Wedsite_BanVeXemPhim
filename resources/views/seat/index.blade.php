@@ -24,7 +24,11 @@ $seatRows = $seats->groupBy('seat_row');
                         {{ $seat->type === 'VIP' ? 'seat-vip' : 'seat-standard' }}
                         {{ in_array($seat->id, $holdingSeatIds) ? 'seat-holding' : '' }}
                         {{ in_array($seat->id, $bookedSeatIds) ? 'seat-booked' : '' }}"
-                        data-seat-id="{{ $seat->id }}">
+                        data-seat-id="{{ $seat->id }}"
+                        data-price="{{ $seat->type == 'VIP'
+                            ? $selectedShowtime->price_standard * 1.2
+                            : $selectedShowtime->price_standard }}"
+                        >
                         {{ $seat->seat_row }}{{ $seat->seat_number }}
                     </div>
 
@@ -122,9 +126,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (totalPriceElement) {
+
+            let totalPrice = 0;
+
+            document.querySelectorAll('.seat-selected').forEach(seat => {
+                totalPrice += Number(seat.dataset.price);
+            });
+
             totalPriceElement.textContent =
-                (window.selectedSeatIds.length * window.ticketPrice)
-                .toLocaleString('vi-VN') + ' đ';
+                totalPrice.toLocaleString('vi-VN') + ' đ';
         }
     }
 });

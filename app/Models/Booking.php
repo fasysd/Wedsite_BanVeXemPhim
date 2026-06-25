@@ -13,7 +13,7 @@ class Booking extends Model
         'user_id',
         'total_price',
         'status',
-        'expire_at',
+        'expired_at',
     ];
 
     public function user()
