@@ -8,12 +8,40 @@ use Illuminate\Validation\Rule;
 
 class AdminMovieController extends Controller
 {
+    public function home(Request $request)
+    {
+        $now = now();
+
+        $movies = Movie::with('showtimes')
+            ->orderBy('release_date', 'desc')
+            ->get();
+
+        $currentShowings = Movie::whereHas('showtimes', function ($query) use ($now) {
+            $query->where('start_time', '<=', $now)
+                ->where('end_time', '>=', $now);
+        })
+        ->with('showtimes')
+        ->orderBy('release_date', 'desc')
+        ->get();
+
+        $upcomingMovies = Movie::where(function ($query) use ($now) {
+            $query->where('release_date', '>', $now)
+                ->orWhereHas('showtimes', function ($query) use ($now) {
+                    $query->where('start_time', '>', $now);
+                });
+        })
+        ->with('showtimes')
+        ->orderBy('release_date', 'asc')
+        ->get();
+
+        return view('admin.home', compact('movies', 'currentShowings', 'upcomingMovies'));
+    }
+
     public function index(Request $request)
     {
         $movies = Movie::withCount('showtimes')
             ->when($request->query('q'), function ($query, $q) {
-                return $query->where('title', 'like', "%{$q}%")
-                    ->orWhere('genre', 'like', "%{$q}%");
+                return $query->where('title', 'like', "{$q}%");
             })
             ->orderBy('id', 'desc')
             ->get();
@@ -38,6 +66,17 @@ class AdminMovieController extends Controller
         }
 
         return view('admin.movie-form', $viewData);
+    }
+
+    public function show(Request $request, Movie $movie)
+    {
+        $movie->load('showtimes');
+
+        if ($request->query('modal')) {
+            return view('admin.movies._detail', compact('movie'));
+        }
+
+        return view('admin.movies.show', compact('movie'));
     }
 
     public function store(Request $request)

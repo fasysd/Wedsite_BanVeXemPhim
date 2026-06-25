@@ -35,6 +35,7 @@
                     </div>
                 </div>
                 <nav class="nav flex-column">
+                    <a class="nav-link" href="{{ route('admin.dashboard') }}">Trang chủ</a>
                     <a class="nav-link" href="{{ route('admin.movies.index') }}">Quản lý phim</a>
                     <a class="nav-link" href="{{ route('admin.showtimes.index') }}">Quản lý lịch chiếu</a>
                     <a class="nav-link" href="{{ route('admin.rooms.index') }}">Quản lý phòng chiếu</a>
@@ -67,18 +68,13 @@
                         @csrf
                         @if($movie->exists)
                             @method('PUT')
-                            <input type="hidden" name="id" value="{{ $movie->id }}">
                         @endif
 
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="form-label">Mã phim</label>
-                                @if($isEdit)
-                                    <input type="text" class="form-control" value="{{ $movie->id }}" disabled>
-                                @else
-                                    <input type="number" name="id" class="form-control" min="1" value="{{ old('id', $movie->id) }}">
-                                    <small class="text-muted">Bỏ trống để tạo ID tự động</small>
-                                @endif
+                                <input type="text" class="form-control" value="{{ $movie->exists ? $movie->id : 'Tự động' }}" disabled>
+                                <small class="text-muted">ID được tạo tự động khi thêm phim mới</small>
                             </div>
                             <div class="col-md-5">
                                 <label class="form-label">Tên phim</label>

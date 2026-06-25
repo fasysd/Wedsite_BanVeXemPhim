@@ -20,6 +20,9 @@
         .table tbody td { border-color: #e2e8f0; color: #000000 !important; }
         .text-muted { color: #94a3b8 !important; }
         .table-hover tbody tr:hover { background: #f1f5f9; }
+        .movie-detail-row { cursor: pointer; }
+        .movie-detail-row td { transition: background 0.15s ease; }
+        .movie-detail-row:hover td { background: #e2e8f0; }
     </style>
 </head>
 <body>
@@ -36,6 +39,7 @@
                     </div>
                 </div>
                 <nav class="nav flex-column">
+                    <a class="nav-link" href="{{ route('admin.dashboard') }}">Trang chủ</a>
                     <a class="nav-link active" href="{{ route('admin.movies.index') }}">Quản lý phim</a>
                     <a class="nav-link" href="{{ route('admin.showtimes.index') }}">Quản lý lịch chiếu</a>
                     <a class="nav-link" href="{{ route('admin.rooms.index') }}">Quản lý phòng chiếu</a>
@@ -61,6 +65,10 @@
                             </form>
                             <button type="button" id="addMovieBtn" class="btn btn-success btn-sm">Thêm phim mới</button>
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Gõ ký tự để hiển thị phim bắt đầu bằng chữ đó.</small>
+                    </div>
                     </div>
                     <div class="row g-3 mb-4">
                         <div class="col-md-4">
@@ -98,7 +106,7 @@
                             </thead>
                             <tbody>
                                 @forelse($movies as $movie)
-                                    <tr>
+                                    <tr class="movie-detail-row" data-detail-url="{{ route('admin.movies.show', $movie) }}?modal=1">
                                         <td class="small text-muted">{{ $movie->id }}</td>
                                         <td>
                                             <img src="{{ $movie->image_path ?: asset('images/movieavatar.webp') }}" alt="{{ $movie->title }}" class="movie-poster shadow-sm" onerror="this.src='{{ asset('images/movieavatar.webp') }}';">
@@ -175,12 +183,36 @@
             }
         }
 
+        const movieSearchInput = document.getElementById('movieSearch');
+        const movieRows = document.querySelectorAll('tbody tr');
+
+        function filterMovieRows() {
+            const query = movieSearchInput.value.trim().toLowerCase();
+            movieRows.forEach(row => {
+                const title = row.querySelector('td:nth-child(3) strong')?.textContent.trim().toLowerCase() || '';
+                const match = query === '' || title.startsWith(query);
+                row.style.display = match ? '' : 'none';
+            });
+        }
+
+        movieSearchInput.addEventListener('input', filterMovieRows);
+
         document.getElementById('addMovieBtn').addEventListener('click', () => {
             loadMovieForm('{{ route('admin.movies.create') }}?modal=1', 'Thêm phim mới');
         });
 
+        document.querySelectorAll('.movie-detail-row').forEach(row => {
+            row.addEventListener('click', event => {
+                if (event.target.closest('button') || event.target.closest('form')) {
+                    return;
+                }
+                loadMovieForm(row.dataset.detailUrl, 'Chi tiết phim');
+            });
+        });
+
         document.querySelectorAll('.editMovieBtn').forEach(button => {
-            button.addEventListener('click', () => {
+            button.addEventListener('click', event => {
+                event.stopPropagation();
                 loadMovieForm(button.dataset.editUrl, 'Sửa phim');
             });
         });

@@ -35,10 +35,11 @@ Route::middleware(['auth', 'staff'])->prefix('staff')->name('staff.')->group(fun
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::redirect('/', '/admin/movies')->name('dashboard');
+    Route::get('/', [AdminMovieController::class, 'home'])->name('dashboard');
     Route::get('/movies', [AdminMovieController::class, 'index'])->name('movies.index');
     Route::get('/movies/create', [AdminMovieController::class, 'create'])->name('movies.create');
     Route::post('/movies', [AdminMovieController::class, 'store'])->name('movies.store');
+    Route::get('/movies/{movie}', [AdminMovieController::class, 'show'])->name('movies.show');
     Route::get('/movies/{movie}/edit', [AdminMovieController::class, 'edit'])->name('movies.edit');
     Route::put('/movies/{movie}', [AdminMovieController::class, 'update'])->name('movies.update');
     Route::delete('/movies/{movie}', [AdminMovieController::class, 'destroy'])->name('movies.destroy');

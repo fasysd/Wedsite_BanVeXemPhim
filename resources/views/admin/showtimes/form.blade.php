@@ -26,10 +26,10 @@
                     <small class="text-muted">Quản lý lịch chiếu</small>
                 </div>
                 <nav class="nav flex-column">
-                    <a class="nav-link" href="{{ route('admin.movies.index') }}">Dashboard</a>
-                    <a class="nav-link" href="{{ route('admin.rooms.index') }}">Quản lý phòng chiếu</a>
-                    <a class="nav-link active" href="{{ route('admin.showtimes.index') }}">Quản lý lịch chiếu</a>
+                    <a class="nav-link" href="{{ route('admin.dashboard') }}">Trang chủ</a>
                     <a class="nav-link" href="{{ route('admin.movies.index') }}">Quản lý phim</a>
+                    <a class="nav-link" href="{{ route('admin.showtimes.index') }}">Quản lý lịch chiếu</a>
+                    <a class="nav-link" href="{{ route('admin.rooms.index') }}">Quản lý phòng chiếu</a>
                     <a class="nav-link" href="{{ route('admin.staff.index') }}">Quản lý nhân viên</a>
                 </nav>
                 <div class="mt-4 pt-4 border-top border-secondary-subtle">
