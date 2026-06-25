@@ -19,6 +19,8 @@ Route::get('/account/general', function () {
 })->name('user.account.general');
 Route::get('/account/tickets', [TicketController::class, 'index'])->name('user.account.tickets');
 Route::get('/account/tickets/{id}', [TicketController::class, 'show'])->name('user.account.tickets.show');
+Route::post('/account/tickets/{id}/cancel', [TicketController::class, 'cancel'])->name('user.account.tickets.cancel');
+Route::post('/account/tickets/{id}/pay', [TicketController::class, 'payment'])->name('user.account.tickets.payment');
 Route::get('/account/detail', function () {
     return view('user.account.detail');
 })->name('user.account.detail');
